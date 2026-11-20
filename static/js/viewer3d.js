@@ -65,12 +65,18 @@ function init(root) {
   function setStatus(text, frac) { ui.status.textContent = text || ''; root.classList.toggle('loading', frac !== null && frac !== undefined && frac < 1); ui.bar.style.width = ((frac || 0) * 100) + '%'; }
 
   // ---------- scene switching
-  async function loadObject(i) {
+  async function loadObject(i, opts = {}) {
     st.obj = i; st.hot = -1; st.cmp = 0; const tok = ++st.token; const o = OBJECTS[i];
-    ui.input.src = o.input; ui.input.alt = 'Input image: ' + o.name; ui.back.hidden = true;
+    ui.input.src = o.input; ui.input.alt = 'Input image: ' + o.name; ui.back.hidden = true; root.classList.remove('in-hot');
     setStatus('Loading ' + o.name + '…', 0.02);
     st.scene = await (await fetch(`static/models/${o.slug}/scene.json`)).json(); if (tok !== st.token) return;
+    const ci = st.scene.methods.findIndex((m) => m.key === opts.cmp); if (ci > 0) st.cmp = ci;   // deep link: ?obj=owl&cmp=trellis2&hot=1
+    const hi = st.scene.hotspots.findIndex((h) => h.label === opts.hot);
     buildCompareTabs(); buildHotspots(); resetView(false);
+    if (hi >= 0) {
+      st.hot = hi; const h = st.scene.hotspots[hi]; ui.back.hidden = false; root.classList.add('in-hot');
+      camera.position.set(...h.view); controls.target.set(...h.p); controls.update();
+    }
     await showMeshes(tok);
   }
   function file(name) { const f = st.scene.files[name]; return f ? `static/models/${st.scene.slug}/${name}.bin.gz` : null; }
@@ -193,10 +199,5 @@ function init(root) {
   const first = want >= 0 ? want : 0;
   ui.objects.querySelectorAll('button').forEach((x, j) => x.classList.toggle('active', j === first));
   const qs = new URLSearchParams(location.search);
-  loadObject(first).then(() => {                       // optional deep link: ?obj=owl&cmp=trellis2&hot=1
-    const ci = st.scene.methods.findIndex((m) => m.key === qs.get('cmp'));
-    if (ci > 0) ui.compare.querySelector(`button[data-i="${ci}"]`).click();
-    const hi = st.scene.hotspots.findIndex((h) => h.label === qs.get('hot'));
-    if (hi >= 0) goHot(hi);
-  });
+  loadObject(first, { cmp: qs.get('cmp'), hot: qs.get('hot') });
 }
