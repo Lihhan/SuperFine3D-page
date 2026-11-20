@@ -161,35 +161,56 @@
     <div class="wrap">
       <div class="section-head reveal">
         <span class="kicker">03 · Interactive comparison</span>
-        <h2>Turn them side by side</h2>
-        <p>Drag the image or the slider to rotate. Every method is rendered with its own camera fitted to the input image, the same material and lighting, and the same rotation.</p>
+        <h2>Look closer</h2>
+        <p>Pick an object and a region. Every method is generated from the same input image and rendered with its own fitted camera at the same region, magnification, material and lighting. Drag any panel to turn the detail.</p>
       </div>
-      <div class="compare reveal" id="turntable">
+      <div class="compare reveal" id="cmp">
         <div class="compare-top">
-          <div class="asset-tabs" role="tablist" aria-label="Assets"></div>
-          <div class="method-tabs" role="tablist" aria-label="Baseline"></div>
-        </div>
-        <div class="compare-body">
-          <div class="compare-input">
-            <img alt="Input image" id="ttInput">
-            <span>Input image</span>
+          <div class="asset-tabs" id="cmpAssets" role="tablist" aria-label="Object"></div>
+          <div class="view-tabs" role="tablist" aria-label="View">
+            <button class="active" data-view="detail">Details</button><button data-view="whole">Whole object</button>
           </div>
-          <div class="panes" id="ttPanes"></div>
         </div>
-        <div class="compare-controls">
-          <button class="play" id="ttPlay" aria-label="Pause rotation"><svg viewBox="0 0 24 24"><path id="ttPlayIcon" fill="currentColor" d="M6 5h4v14H6zm8 0h4v14h-4z"/></svg></button>
-          <input type="range" id="ttSlider" min="0" max="24" value="12" aria-label="Rotation">
-          <span class="angle" id="ttAngle">0&deg;</span>
-        </div>
-      </div>
 
-      <div class="subhead reveal">
-        <h3>Close-ups at 4096<sup>3</sup></h3>
-        <p>Matching windows of every method at high magnification, from the video. Ours is the large panel; the baselines are below it.</p>
-      </div>
-      <div class="gallery reveal" id="closeups">
-        <div class="gallery-tabs" role="tablist"></div>
-        <figure class="gallery-view zoomable"><img alt="Close-up comparison" loading="lazy"></figure>
+        <div class="dv" id="dvView">
+          <div class="dv-left">
+            <div class="dv-input">
+              <img id="dvInput" alt="Input image">
+              <div class="dv-box" id="dvBox"></div>
+              <span class="tag">Input image</span>
+            </div>
+            <div class="detail-tabs" id="dvTabs" role="tablist" aria-label="Region"></div>
+            <div class="dv-crop zoomable">
+              <img id="dvCrop" alt="Input image, same region">
+              <span class="tag">Input image &middot; same region</span>
+            </div>
+          </div>
+          <div class="dv-right">
+            <div class="pane is-ours dv-ours zoomable" data-m="ours"><img alt="SuperFine3D" draggable="false"><span class="tag">SuperFine3D <small>4096³ · ours</small></span></div>
+            <div class="dv-bases" id="dvBases"></div>
+          </div>
+        </div>
+        <div class="compare-controls" id="dvControls">
+          <button class="play" id="dvPlay" aria-label="Pause"><svg viewBox="0 0 24 24"><path id="dvPlayIcon" fill="currentColor" d="M6 5h4v14H6zm8 0h4v14h-4z"/></svg></button>
+          <input type="range" id="dvSlider" min="0" max="8" value="4" aria-label="Turn the detail">
+          <span class="angle" id="dvAngle">0&deg;</span>
+        </div>
+
+        <div id="ttView" hidden>
+          <div class="method-tabs" role="tablist" aria-label="Baseline"></div>
+          <div class="compare-body">
+            <div class="compare-input">
+              <img alt="Input image" id="ttInput">
+              <span>Input image</span>
+            </div>
+            <div class="panes" id="ttPanes"></div>
+          </div>
+          <div class="compare-controls">
+            <button class="play" id="ttPlay" aria-label="Pause rotation"><svg viewBox="0 0 24 24"><path id="ttPlayIcon" fill="currentColor" d="M6 5h4v14H6zm8 0h4v14h-4z"/></svg></button>
+            <input type="range" id="ttSlider" min="0" max="24" value="12" aria-label="Rotation">
+            <span class="angle" id="ttAngle">0&deg;</span>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -233,7 +254,7 @@
       <div class="section-head reveal">
         <span class="kicker">05 · Faithful to the image</span>
         <h2>Relief, not paint</h2>
-        <p>Image appearance is not carved into the surface, and detail follows the genuine resolution of the image.</p>
+        <p>Grain stripes, dark patina and painted patterns stay in the image; carved relief goes into the geometry.</p>
       </div>
       <figure class="figure reveal zoomable">
         <img src="static/img/supp_textured.webp" alt="Image appearance is not carved into the surface" loading="lazy">
@@ -243,10 +264,6 @@
         <figure class="tile reveal zoomable"><img src="static/img/hard_tortoise_closeup.webp" alt="Bronze tortoise close-up" loading="lazy"><figcaption>Bronze tortoise at 4096<sup>3</sup> (from the video)</figcaption></figure>
         <figure class="tile reveal zoomable"><img src="static/img/hard_chameleon_closeup.webp" alt="Folk-art chameleon close-up" loading="lazy"><figcaption>Folk-art chameleon at 4096<sup>3</sup> (from the video)</figcaption></figure>
       </div>
-      <figure class="figure reveal zoomable" style="margin-top:28px">
-        <img src="static/img/supp_input_res.webp" alt="Detail follows the genuine image resolution" loading="lazy">
-        <figcaption><b>Detail follows the genuine image resolution.</b> The native 4096&thinsp;px image, the image downsampled to 1024&thinsp;px, and the 1024&thinsp;px image upsampled to 4096&thinsp;px, each refined from the same 512<sup>3</sup> start. Fine relief requires genuine high-frequency detail in the image; interpolation adds pixels but no detail.</figcaption>
-      </figure>
     </div>
   </section>
 
@@ -290,20 +307,6 @@
         <div class="pill"><b>+18.9%</b> detail quality over TRELLIS.2 (DQ 0.647 at 4096<sup>3</sup>)</div>
         <div class="pill"><b>27.5&deg;</b> input-view normal error vs. 33.7&deg; for the best baseline</div>
         <div class="pill"><b>~10&times;</b> higher 4&ndash;16 px detail correlation (0.368 vs. 0.038)</div>
-      </div>
-      <div class="subhead reveal">
-        <h3>Ablations</h3>
-        <p>Detail injection, the fine-tuned detail-normal estimator, and geometry-aware supervision at 4096<sup>3</sup>.</p>
-      </div>
-      <div class="split split-even">
-        <figure class="figure reveal zoomable">
-          <img src="static/img/ablation_injection.webp" alt="Ablation of detail injection and the detail-normal estimator" loading="lazy">
-          <figcaption><b>Ablation of detail injection and the detail-normal estimator.</b> Ground-truth render (input), w/o injection, original NiRNE, and the full model. Close-ups: (A) large fret pattern, (B) fine fret band, (C) flat lid.</figcaption>
-        </figure>
-        <figure class="figure reveal zoomable">
-          <img src="static/img/ablation_supervision.webp" alt="Effect of geometry-aware supervision" loading="lazy">
-          <figcaption><b>Effect of geometry-aware supervision.</b> Matched 4096<sup>3</sup> hand close-ups: it suppresses unnecessary surface changes while retaining distinct finger geometry.</figcaption>
-        </figure>
       </div>
     </div>
   </section>
