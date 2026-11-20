@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SuperFine3D</title>
+<meta name="description" content="SuperFine3D: Efficient Global-Local Recursive Refinement for Extremely Detailed 3D Geometry Generation. 4096³ geometry from a single image in about three minutes on one GPU.">
+<meta property="og:title" content="SuperFine3D: Extremely Detailed 3D Geometry at 4096³">
+<meta property="og:description" content="Recursive global-local refinement turns a single image into 4096³ geometry in about three minutes on one GPU.">
+<meta property="og:image" content="static/img/fig1_teaser.jpg">
+<meta name="theme-color" content="#0a0d14">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23ffd29a'/%3E%3Cstop offset='1' stop-color='%23ff8a3d'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='14' fill='%230a0d14'/%3E%3Cpath d='M14 46 L32 12 L50 46 Z' fill='none' stroke='url(%23g)' stroke-width='5' stroke-linejoin='round'/%3E%3Cpath d='M23 46 L32 29 L41 46' fill='none' stroke='url(%23g)' stroke-width='4' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="static/css/style.css">
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <a class="brand" href="#top"><span class="brand-mark"></span>SuperFine3D</a>
+    <div class="nav-links">
+      <a href="#video">Video</a>
+      <a href="#method">Method</a>
+      <a href="#compare">Compare</a>
+      <a href="#results">Results</a>
+      <a href="#efficiency">Efficiency</a>
+      <a href="#bibtex">BibTeX</a>
+    </div>
+    <span class="nav-cta" title="Coming soon">Code <em style="font-style:normal;font-size:11px;opacity:.7">soon</em></span>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="hero-glow" aria-hidden="true"></div>
+  <div class="wrap hero-grid">
+    <div class="hero-copy reveal">
+      <div class="eyebrow"><span class="dot"></span><span>Single image &rarr; 4096<sup>3</sup> geometry</span></div>
+      <h1 class="title">Super<span class="grad">Fine</span>3D</h1>
+      <p class="subtitle">Efficient Global-Local Recursive Refinement for Extremely Detailed 3D Geometry Generation</p>
+      <p class="authors">
+        <span>Lihan Li</span><span>Junwei Zhou</span><span>Yu-Wing Tai</span>
+      </p>
+      <p class="affil">Dartmouth College</p>
+      <div class="buttons">
+        <a class="btn btn-primary" href="#video"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>Watch video</a>
+        <span class="btn btn-ghost" title="Coming soon"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M9.4 16.6 4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0 4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg>Code <em>soon</em></span>
+        <span class="btn btn-ghost" title="Coming soon"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/></svg>Paper <em>soon</em></span>
+        <a class="btn" href="#bibtex"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M6 2h9l5 5v15H6V2zm8 1.5V8h4.5L14 3.5zM8 12h8v1.5H8V12zm0 3h8v1.5H8V15zm0 3h5v1.5H8V18z"/></svg>BibTeX</a>
+      </div>
+    </div>
+    <div class="hero-stage reveal">
+      <div class="stage-frame">
+        <video id="heroVideo" class="stage-video" src="static/video/hero_chameleon.mp4" autoplay muted loop playsinline preload="auto" poster=""></video>
+        <div class="stage-input">
+          <img id="heroInput" src="static/img/input_h18.webp" alt="Input image">
+          <span>Input image</span>
+        </div>
+        <div class="stage-badge"><span class="pulse"></span><span>Ours · 4096<sup>3</sup> · untextured geometry</span></div>
+      </div>
+      <div class="stage-switch" role="tablist" aria-label="Hero examples">
+        <button class="active" data-video="static/video/hero_chameleon.mp4" data-input="static/img/input_h18.webp">Folk-art chameleon</button>
+        <button data-video="static/video/hero_tortoise.mp4" data-input="static/img/input_h17.webp">Bronze tortoise</button>
+        <button data-video="static/video/hero_owl.mp4" data-input="static/img/input_g04.webp">Armoured owl</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap stats reveal">
+    <div class="stat"><div class="num"><span class="count" data-to="4096">4096</span><sup>3</sup></div><div class="lbl">decoder-grid resolution<br>(sparse 256<sup>3</sup> latent lattice)</div></div>
+    <div class="stat"><div class="num"><span class="count" data-to="176.2" data-dec="1">176.2</span><small>s</small></div><div class="lbl">image &rarr; 4096<sup>3</sup> mesh<br>on one GPU</div></div>
+    <div class="stat"><div class="num"><span class="count" data-to="9.4" data-dec="1">9.4</span><small>&times;</small></div><div class="lbl">faster than a full-attention<br>recursive baseline</div></div>
+    <div class="stat"><div class="num"><span class="count" data-to="525">525</span><small>&times;</small></div><div class="lbl">faster attention layer<br>at 708k tokens</div></div>
+    <div class="stat"><div class="num"><span class="count" data-to="28">28</span><small>&times;</small></div><div class="lbl">faster DiT block<br>at 708k tokens</div></div>
+  </div>
+</header>
+
+<main>
+  <section id="video" class="section">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="kicker">01 · Video</span>
+        <h2>Three minutes of fine geometry</h2>
+        <p>Efficiency at every level, whole-object comparisons with TRELLIS.2, Hunyuan3D-2.1, Pixal3D and UltraShape turning in sync, and close-ups at high magnification.</p>
+      </div>
+      <div class="video-card reveal">
+        <video controls preload="metadata" playsinline poster="static/img/video_poster.jpg">
+          <source src="static/video/superfine3d_video.mp4" type="video/mp4">
+        </video>
+      </div>
+    </div>
+  </section>
+
+  <section id="abstract" class="section section-tight">
+    <div class="wrap narrow reveal">
+      <span class="kicker">Abstract</span>
+      <p class="abstract">
+        High-resolution images contain rich visual details that require fine geometric structures for faithful 3D reconstruction.
+        However, generating extremely detailed 3D geometry from images requires substantial computational resources and training data,
+        making high-resolution geometry generation challenging for existing state-of-the-art models. In this paper, we present
+        <b>SuperFine3D</b>, an efficient framework for generating extremely detailed 3D geometry through global-local recursive refinement.
+        SuperFine3D learns a shared refinement operator from paired coarse-to-fine representations and recursively reuses it to
+        progressively synthesize finer geometry beyond the training resolutions, without requiring additional paired supervision at
+        target resolutions. To make recursive refinement computationally efficient, we introduce <b>spatial-cell attention</b>, which
+        restricts high-resolution interactions to local spatial neighborhoods while maintaining bounded communication across neighboring
+        cells. We further propose <b>spatially anchored cross-scale guidance</b>, which leverages globally contextualized coarse geometry
+        to guide local detail synthesis and preserve structural consistency. In addition, geometry-aware training objectives encourage the
+        refinement process to preserve stable geometric structures while introducing fine-grained surface details. Experiments demonstrate
+        that SuperFine3D generates geometry at a 4096<sup>3</sup> decoder-grid resolution, corresponding to a sparse 256<sup>3</sup>
+        latent lattice, using a shared refinement operator trained only on 512<sup>3</sup>&ndash;1024<sup>3</sup> representations.
+        Compared with a full-attention recursive baseline, SuperFine3D achieves a <b>9.4&times; speedup</b> in end-to-end inference and
+        reduces peak GPU memory usage by <b>23.0%</b>, while improving cross-scale structural consistency and producing cleaner surfaces
+        with finer geometric details.
+      </p>
+    </div>
+  </section>
+
+  <section id="method" class="section">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="kicker">02 · Method</span>
+        <h2>One operator, applied recursively</h2>
+        <p>A pretrained generator produces a coarse 512<sup>3</sup> shape, from which the input camera is estimated. At every level, detail normals estimated from the input image are injected into the current mesh; the corrected mesh is encoded at twice the resolution, partially noised, and refined by the shared refinement network conditioned on the preceding latent and the image.</p>
+      </div>
+      <figure class="figure reveal zoomable">
+        <img src="static/img/fig2_pipeline.webp" alt="Overview of SuperFine3D" loading="lazy">
+        <figcaption><b>Overview of SuperFine3D.</b> Coarse initialization, guided refinement 512<sup>3</sup> &rarr; 4096<sup>3</sup>, and one refine step (bottom): height-field injection, encoding at twice the resolution, partial noising and the refinement network with HR local attention, LR cross-attention and spatial guidance.</figcaption>
+      </figure>
+      <div class="cards">
+        <article class="card reveal">
+          <div class="card-icon"><svg viewBox="0 0 24 24"><path d="M4 18h4v-4H4v4zm6 0h4v-8h-4v8zm6 0h4V6h-4v12z" fill="currentColor"/></svg></div>
+          <h3>Recursive refinement</h3>
+          <p>A shared refinement operator learned from paired coarse-to-fine representations is reused to synthesize geometry beyond the training resolutions, without paired supervision at the target resolutions.</p>
+        </article>
+        <article class="card reveal">
+          <div class="card-icon"><svg viewBox="0 0 24 24"><path d="M3 3h8v8H3V3zm10 0h8v8h-8V3zM3 13h8v8H3v-8zm10 0h8v8h-8v-8z" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></div>
+          <h3>Spatial-cell attention</h3>
+          <p>High-resolution interactions are restricted to local spatial neighborhoods while bounded communication across neighboring cells is maintained.</p>
+        </article>
+        <article class="card reveal">
+          <div class="card-icon"><svg viewBox="0 0 24 24"><path d="M12 3v18M3 12h18M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></div>
+          <h3>Cross-scale guidance</h3>
+          <p>Spatially anchored guidance from globally contextualized coarse geometry steers local detail synthesis and preserves structural consistency.</p>
+        </article>
+        <article class="card reveal">
+          <div class="card-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8 13c1.5 2 6.5 2 8 0M9 9.5h.01M15 9.5h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg></div>
+          <h3>Geometry-aware training</h3>
+          <p>Objectives on the decoded geometry keep stable structures unchanged and introduce fine-grained surface detail where the target changes.</p>
+        </article>
+      </div>
+      <figure class="figure reveal zoomable" style="margin-top:28px">
+        <img src="static/img/fig3_training.webp" alt="Training objective" loading="lazy">
+        <figcaption><b>Training objective.</b> The prediction, the target and the LR latent are decoded by a frozen decoder. In render space, depth corrections on reliable pixels drive <i>L</i><sub>keep</sub> (no change where the target is flat) and <i>L</i><sub>detail</sub> (match depth, slope and normal where it changes). In decoder space, matched sites give <i>L</i><sub>edge</sub> (balanced BCE on surface crossings) and <i>L</i><sub>plane</sub> (normal-only displacement). All terms are added to the flow-matching loss.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section id="compare" class="section">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="kicker">03 · Interactive comparison</span>
+        <h2>Turn them side by side</h2>
+        <p>Drag the image or the slider to rotate. Every method is rendered with its own camera fitted to the input image, the same material and lighting, and the same rotation.</p>
+      </div>
+      <div class="compare reveal" id="turntable">
+        <div class="compare-top">
+          <div class="asset-tabs" role="tablist" aria-label="Assets"></div>
+          <div class="method-tabs" role="tablist" aria-label="Baseline"></div>
+        </div>
+        <div class="compare-body">
+          <div class="compare-input">
+            <img alt="Input image" id="ttInput">
+            <span>Input image</span>
+          </div>
+          <div class="panes" id="ttPanes"></div>
+        </div>
+        <div class="compare-controls">
+          <button class="play" id="ttPlay" aria-label="Pause rotation"><svg viewBox="0 0 24 24"><path id="ttPlayIcon" fill="currentColor" d="M6 5h4v14H6zm8 0h4v14h-4z"/></svg></button>
+          <input type="range" id="ttSlider" min="0" max="24" value="12" aria-label="Rotation">
+          <span class="angle" id="ttAngle">0&deg;</span>
+        </div>
+      </div>
+
+      <div class="subhead reveal">
+        <h3>Close-ups at 4096<sup>3</sup></h3>
+        <p>Matching windows of every method at high magnification, from the video. Ours is the large panel; the baselines are below it.</p>
+      </div>
+      <div class="gallery reveal" id="closeups">
+        <div class="gallery-tabs" role="tablist"></div>
+        <figure class="gallery-view zoomable"><img alt="Close-up comparison" loading="lazy"></figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="kicker">04 · Comparison with existing methods</span>
+        <h2>Detail that follows the image</h2>
+        <p>Inputs are 4096&thinsp;px images generated with Nano Banana Pro, identical for all methods.</p>
+      </div>
+      <figure class="figure reveal zoomable">
+        <img src="static/img/fig5_comparison.webp" alt="Comparison of fine geometric details" loading="lazy">
+        <figcaption><b>Comparison of fine geometric details</b> with TRELLIS.2, Hunyuan3D-2.1, Pixal3D, Direct3D-S2, SAM 3D and UltraShape.</figcaption>
+      </figure>
+      <figure class="figure reveal zoomable">
+        <img src="static/img/fig1_teaser.webp" alt="High-resolution geometry with fine detail and efficient inference" loading="lazy">
+        <figcaption><b>High-resolution geometry with fine detail and efficient inference.</b> Left: input image. Middle: surface normals of GT, TRELLIS.2, Hunyuan3D-2.1, Pixal3D, Direct3D-S2, UltraShape and ours, with zooms A and B; only ours recovers the inscription and relief. Right: detail quality vs. end-to-end time for the only three methods that reach 4096-class resolution, and latency of one attention layer and one DiT block vs. high-resolution tokens.</figcaption>
+      </figure>
+      <div class="split">
+        <figure class="figure reveal zoomable">
+          <img src="static/img/supp_more_comparisons.webp" alt="Additional comparisons with existing methods" loading="lazy">
+          <figcaption><b>Additional comparisons.</b> Carved censer, guardian lion and pangolin (generated images), and ornate wooden door. Close-ups of the reference (for generated images, the input crop) and of each method from the input view.</figcaption>
+        </figure>
+        <div>
+          <figure class="figure reveal zoomable">
+            <img src="static/img/supp_offview.webp" alt="Detail holds off the input view" loading="lazy">
+            <figcaption><b>Detail holds off the input view.</b> Each close-up is rendered with the object turned by 30&deg; about the vertical axis through the region. The relief transferred from the input image keeps its shape and depth in the turned view.</figcaption>
+          </figure>
+          <figure class="figure reveal zoomable">
+            <img src="static/img/fig4_beyond_resolution.webp" alt="Generation beyond training resolutions" loading="lazy">
+            <figcaption><b>Generation beyond training resolutions.</b> The same operator, trained on 512<sup>3</sup>&ndash;1024<sup>3</sup> pairs, refines 1024<sup>3</sup> &rarr; 2048<sup>3</sup> &rarr; 4096<sup>3</sup>.</figcaption>
+          </figure>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="kicker">05 · Faithful to the image</span>
+        <h2>Relief, not paint</h2>
+        <p>Image appearance is not carved into the surface, and detail follows the genuine resolution of the image.</p>
+      </div>
+      <figure class="figure reveal zoomable">
+        <img src="static/img/supp_textured.webp" alt="Image appearance is not carved into the surface" loading="lazy">
+        <figcaption><b>Image appearance is not carved into the surface.</b> A zebrawood owl with bold grain stripes, a bronze tortoise with a near-black patina under low-key light, and a folk-art chameleon whose flat paint runs across the carving. The carved feathers, chased medallions and carved scales are recovered; the grain stripes and the painted checks do not become relief.</figcaption>
+      </figure>
+      <div class="duo">
+        <figure class="tile reveal zoomable"><img src="static/img/hard_tortoise_closeup.webp" alt="Bronze tortoise close-up" loading="lazy"><figcaption>Bronze tortoise at 4096<sup>3</sup> (from the video)</figcaption></figure>
+        <figure class="tile reveal zoomable"><img src="static/img/hard_chameleon_closeup.webp" alt="Folk-art chameleon close-up" loading="lazy"><figcaption>Folk-art chameleon at 4096<sup>3</sup> (from the video)</figcaption></figure>
+      </div>
+      <figure class="figure reveal zoomable" style="margin-top:28px">
+        <img src="static/img/supp_input_res.webp" alt="Detail follows the genuine image resolution" loading="lazy">
+        <figcaption><b>Detail follows the genuine image resolution.</b> The native 4096&thinsp;px image, the image downsampled to 1024&thinsp;px, and the 1024&thinsp;px image upsampled to 4096&thinsp;px, each refined from the same 512<sup>3</sup> start. Fine relief requires genuine high-frequency detail in the image; interpolation adds pixels but no detail.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="kicker">06 · Two views</span>
+        <h2>More views, truer pose</h2>
+        <p>With the same pipeline, a second input view resolves what a single view cannot see.</p>
+      </div>
+      <figure class="figure reveal zoomable">
+        <img src="static/img/fig6_two_view.webp" alt="Novel-view comparison" loading="lazy">
+        <figcaption><b>Novel-view comparison.</b> Inputs from the front-left and the left; GT is a held-out photo from the front-right, 62&deg; and 112&deg; from the inputs. A single view stretches the dragon sideways; two views recover its pose. Photos: The Cleveland Museum of Art, Open Access (CC0).</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section id="results" class="section">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="kicker">07 · Quantitative results</span>
+        <h2>Best detail, closest to the image</h2>
+        <p>Geometric quality on Toys4K. Distances are scaled by 10<sup>3</sup>; F-scores are percentages. Corr: image-space normal correlation in the 4&ndash;16 px and 16&ndash;64 px bands.</p>
+      </div>
+      <div class="table-card reveal">
+        <table>
+          <thead>
+            <tr><th>Method</th><th>Res.</th><th>CD-L1 &darr;</th><th>Ang. (&deg;) &darr;</th><th>F@0.002 &uarr;</th><th>DQ &uarr;</th><th>Corr 4&ndash;16 &uarr;</th><th>Corr 16&ndash;64 &uarr;</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>TRELLIS.2</td><td>1536</td><td>15.711</td><td>35.40</td><td>17.075</td><td>0.5444</td><td>0.002</td><td>0.105</td></tr>
+            <tr><td>Hunyuan3D-2.1</td><td>1024</td><td>16.115</td><td>38.42</td><td>14.204</td><td>0.3680</td><td>0.006</td><td>0.110</td></tr>
+            <tr><td>Pixal3D</td><td>1536</td><td>17.761</td><td>33.70</td><td>14.197</td><td>0.5319</td><td>0.038</td><td>0.268</td></tr>
+            <tr><td>UltraShape</td><td>4096</td><td>17.381</td><td>35.76</td><td>12.083</td><td>0.1708</td><td>0.014</td><td>0.166</td></tr>
+            <tr class="ours"><td>SuperFine3D</td><td>2048</td><td><b>15.639</b></td><td><b>27.44</b></td><td>17.107</td><td>0.5957</td><td>0.364</td><td>0.501</td></tr>
+            <tr class="ours"><td>SuperFine3D</td><td>4096</td><td>15.660</td><td>27.46</td><td><b>17.123</b></td><td><b>0.6474</b></td><td><b>0.368</b></td><td><b>0.518</b></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pills reveal">
+        <div class="pill"><b>+18.9%</b> detail quality over TRELLIS.2 (DQ 0.647 at 4096<sup>3</sup>)</div>
+        <div class="pill"><b>27.5&deg;</b> input-view normal error vs. 33.7&deg; for the best baseline</div>
+        <div class="pill"><b>~10&times;</b> higher 4&ndash;16 px detail correlation (0.368 vs. 0.038)</div>
+      </div>
+      <div class="subhead reveal">
+        <h3>Ablations</h3>
+        <p>Detail injection, the fine-tuned detail-normal estimator, and geometry-aware supervision at 4096<sup>3</sup>.</p>
+      </div>
+      <div class="split split-even">
+        <figure class="figure reveal zoomable">
+          <img src="static/img/ablation_injection.webp" alt="Ablation of detail injection and the detail-normal estimator" loading="lazy">
+          <figcaption><b>Ablation of detail injection and the detail-normal estimator.</b> Ground-truth render (input), w/o injection, original NiRNE, and the full model. Close-ups: (A) large fret pattern, (B) fine fret band, (C) flat lid.</figcaption>
+        </figure>
+        <figure class="figure reveal zoomable">
+          <img src="static/img/ablation_supervision.webp" alt="Effect of geometry-aware supervision" loading="lazy">
+          <figcaption><b>Effect of geometry-aware supervision.</b> Matched 4096<sup>3</sup> hand close-ups: it suppresses unnecessary surface changes while retaining distinct finger geometry.</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section id="efficiency" class="section">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="kicker">08 · Efficiency</span>
+        <h2>Faster at every level</h2>
+        <p>Latency of the first DiT block on eight assets spanning 143,440&ndash;708,592 HR tokens: identical HR coordinates, noise, image conditioning, batch size one and BF16 on the same GPU; median of nine synchronized measurements.</p>
+      </div>
+      <div class="charts">
+        <div class="chart-card reveal" id="chartAttn"></div>
+        <div class="chart-card reveal" id="chartBlock"></div>
+      </div>
+      <div class="e2e reveal" id="e2e">
+        <div class="e2e-head"><h3>End-to-end inference at 4096<sup>3</sup>-class resolution</h3><span>time on the same input</span></div>
+        <div class="bar-row">
+          <div class="bar-label">UltraShape<small>4096<sup>3</sup> extraction</small></div>
+          <div class="bar-track"><div class="bar bar-base" data-w="100"></div></div>
+          <div class="bar-val">2214.71 s</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">TRELLIS.2-Rec.<small>full attention &middot; 63.07 GiB</small></div>
+          <div class="bar-track"><div class="bar bar-base" data-w="74.69"></div></div>
+          <div class="bar-val">1654.14 s</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">SuperFine3D<small>ours &middot; 48.54 GiB</small></div>
+          <div class="bar-track"><div class="bar bar-ours" data-w="7.96"></div></div>
+          <div class="bar-val ours-val">176.19 s</div>
+        </div>
+        <div class="e2e-foot"><b>9.4&times;</b> faster than TRELLIS.2-Rec. with <b>23.0%</b> less peak GPU memory &middot; about <b>12.6&times;</b> faster than UltraShape</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="bibtex" class="section section-tight">
+    <div class="wrap narrow reveal">
+      <span class="kicker">Citation</span>
+      <div class="bib">
+        <button class="copy" id="copyBib">Copy</button>
+<pre id="bibText">@misc{li2026superfine3d,
+  title  = {SuperFine3D: Efficient Global-Local Recursive Refinement
+            for Extremely Detailed 3D Geometry Generation},
+  author = {Li, Lihan and Zhou, Junwei and Tai, Yu-Wing},
+  year   = {2026}
+}</pre>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <p>SuperFine3D builds on <a href="https://github.com/microsoft/TRELLIS.2">TRELLIS.2</a>, <a href="https://github.com/TencentARC/Pixal3D">Pixal3D</a>, <a href="https://github.com/Stable-X/StableNormal">StableNormal</a> and <a href="https://github.com/Dao-AILab/flash-attention">FlashAttention</a>. Gallery inputs are generated images.</p>
+    <p class="muted">&copy; 2026 Lihan Li, Junwei Zhou, Yu-Wing Tai · Dartmouth College</p>
+  </div>
+</footer>
+
+<div class="lightbox" id="lightbox" aria-hidden="true"><img alt=""><button aria-label="Close">&times;</button></div>
+
+<script src="static/js/main.js"></script>
+</body>
+</html>
