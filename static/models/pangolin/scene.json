@@ -22,11 +22,6 @@
    "key": "pixal3d",
    "name": "Pixal3D",
    "res": "1536\u00b3"
-  },
-  {
-   "key": "ultrashape",
-   "name": "UltraShape",
-   "res": "4096\u00b3"
   }
  ],
  "files": {
@@ -124,30 +119,6 @@
    "f": 430799,
    "bytes": 2723510,
    "faces_full": 430799
-  },
-  "whole_ultrashape": {
-   "v": 787217,
-   "f": 773798,
-   "bytes": 6801465,
-   "faces_full": 189354340
-  },
-  "h0_ultrashape": {
-   "v": 503803,
-   "f": 857263,
-   "bytes": 5817733,
-   "faces_full": 3727712
-  },
-  "h1_ultrashape": {
-   "v": 520666,
-   "f": 875469,
-   "bytes": 5821331,
-   "faces_full": 5091503
-  },
-  "h2_ultrashape": {
-   "v": 490324,
-   "f": 859667,
-   "bytes": 5688325,
-   "faces_full": 2326870
   }
  },
  "hotspots": [
@@ -224,16 +195,6 @@
    "hot0_shift_over_r": 0.031,
    "hot1_shift_over_r": 0.01,
    "hot2_shift_over_r": 0.028
-  },
-  "ultrashape": {
-   "anisotropy": 3.0821442159643464,
-   "icp_rot_deg": 7.158904729292715,
-   "icp_scale": 1.2093010430331224,
-   "trimmed_rms_before": 0.03492549659780073,
-   "trimmed_rms_after": 0.009197803176876304,
-   "hot0_shift_over_r": 0.0,
-   "hot1_shift_over_r": 0.0,
-   "hot2_shift_over_r": 0.0
   }
  },
  "camera": {
@@ -254,5 +215,5 @@
   ],
   "fov": 25.00612553478128
  },
- "total_mb": 102.6
+ "total_mb": 78.5
 }

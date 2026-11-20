@@ -8,8 +8,6 @@ if (root) init(root);
 function init(root) {
   const OBJECTS = [
     { slug: 'pangolin', name: 'Ceremonial pangolin', input: 'static/models/pangolin/input.webp' },
-    { slug: 'owl', name: 'Armoured owl', input: 'static/models/owl/input.webp' },
-    { slug: 'box', name: 'Carved box', input: 'static/models/box/input.webp' },
   ];
   const canvas = root.querySelector('canvas');
   const ui = {
@@ -125,7 +123,16 @@ function init(root) {
     const c = st.scene.camera; camera.fov = Math.min(Math.max(c.fov, 18), 40); camera.up.set(...c.up);
     const pos = new THREE.Vector3(...c.pos), tgt = new THREE.Vector3(...c.target);
     const dir = pos.clone().sub(tgt); const dist = 1.18 / Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)); pos.copy(tgt).addScaledVector(dir.normalize(), dist);
+    setLimits();
     if (animate) fly(pos, tgt); else { camera.position.copy(pos); controls.target.copy(tgt); camera.updateProjectionMatrix(); controls.update(); }
+  }
+  // keep the camera on the front side: azimuth within +-60 deg and polar within +-35 deg of the input view
+  function setLimits() {
+    const c = st.scene.camera, off = new THREE.Vector3(...c.pos).sub(new THREE.Vector3(...c.target));
+    off.applyQuaternion(new THREE.Quaternion().setFromUnitVectors(camera.up.clone().normalize(), new THREE.Vector3(0, 1, 0)));
+    const sph = new THREE.Spherical().setFromVector3(off), A = THREE.MathUtils.degToRad(60), P = THREE.MathUtils.degToRad(35);
+    controls.minAzimuthAngle = sph.theta - A; controls.maxAzimuthAngle = sph.theta + A;
+    controls.minPolarAngle = Math.max(0.05, sph.phi - P); controls.maxPolarAngle = Math.min(Math.PI - 0.05, sph.phi + P);
   }
   let anim = null;
   function fly(pos, tgt, ms = 900) {
@@ -187,7 +194,8 @@ function init(root) {
   requestAnimationFrame(frame);
 
   // ---------- object tabs, fullscreen
-  ui.objects.innerHTML = OBJECTS.map((o, i) => `<button class="${i === 0 ? 'active' : ''}" data-i="${i}">${o.name}</button>`).join('');
+  ui.objects.innerHTML = OBJECTS.length > 1 ? OBJECTS.map((o, i) => `<button class="${i === 0 ? 'active' : ''}" data-i="${i}">${o.name}</button>`).join('')
+    : `<span class="v3d-title">${OBJECTS[0].name}</span>`;   // a single object: a title instead of tabs
   ui.objects.querySelectorAll('button').forEach((b) => b.addEventListener('click', () => {
     ui.objects.querySelectorAll('button').forEach((x) => x.classList.toggle('active', x === b)); loadObject(+b.dataset.i);
   }));
