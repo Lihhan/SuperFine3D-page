@@ -13,7 +13,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="static/css/style.css?v=20261120c">
+<link rel="stylesheet" href="static/css/style.css?v=20261120e">
 </head>
 <body>
 <div class="grain" aria-hidden="true"></div>
@@ -24,7 +24,7 @@
     <div class="nav-links">
       <a href="#video">Video</a>
       <a href="#method">Method</a>
-      <a href="#compare">Compare</a>
+      <a href="#top">3D</a>
       <a href="#results">Results</a>
       <a href="#efficiency">Efficiency</a>
       <a href="#bibtex">BibTeX</a>
@@ -52,19 +52,23 @@
       </div>
     </div>
     <div class="hero-stage reveal">
-      <div class="stage-frame">
-        <video id="heroVideo" class="stage-video" src="static/video/hero_chameleon.mp4" autoplay muted loop playsinline preload="auto" poster=""></video>
-        <div class="stage-input">
-          <img id="heroInput" src="static/img/input_h18.webp" alt="Input image">
-          <span>Input image</span>
+      <div class="v3d" id="v3d">
+        <canvas aria-label="Interactive 3D comparison"></canvas>
+        <div class="v3d-hot"></div>
+        <div class="v3d-top">
+          <div class="v3d-objects" role="tablist" aria-label="Object"></div>
+          <button class="v3d-full" title="Full screen" aria-label="Full screen"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M4 4h6v2H6v4H4V4zm10 0h6v6h-2V6h-4V4zM4 14h2v4h4v2H4v-6zm14 0h2v6h-6v-2h4v-4z"/></svg></button>
         </div>
-        <div class="stage-badge"><span class="pulse"></span><span>Ours · 4096<sup>3</sup> · untextured geometry</span></div>
+        <div class="v3d-label v3d-label-a"></div>
+        <div class="v3d-label v3d-label-b"></div>
+        <div class="v3d-divider"></div>
+        <div class="v3d-input"><img alt="Input image"><span>Input image</span></div>
+        <button class="v3d-back" hidden>&larr; Whole object</button>
+        <div class="v3d-status"></div>
+        <div class="v3d-bar"><i></i></div>
       </div>
-      <div class="stage-switch" role="tablist" aria-label="Hero examples">
-        <button class="active" data-video="static/video/hero_chameleon.mp4" data-input="static/img/input_h18.webp">Folk-art chameleon</button>
-        <button data-video="static/video/hero_tortoise.mp4" data-input="static/img/input_h17.webp">Bronze tortoise</button>
-        <button data-video="static/video/hero_owl.mp4" data-input="static/img/input_g04.webp">Armoured owl</button>
-      </div>
+      <div class="v3d-compare" role="tablist" aria-label="Compare with"></div>
+      <p class="v3d-hint">Drag to rotate &middot; scroll to zoom &middot; click the model to fly in &middot; numbered spots load full-resolution geometry &middot; double-click to reset</p>
     </div>
   </div>
 
@@ -128,6 +132,10 @@
         <img src="static/img/fig2_pipeline.webp" alt="Overview of SuperFine3D" loading="lazy">
         <figcaption><b>Overview of SuperFine3D.</b> Coarse initialization, guided refinement 512<sup>3</sup> &rarr; 4096<sup>3</sup>, and one refine step (bottom): height-field injection, encoding at twice the resolution, partial noising and the refinement network with HR local attention, LR cross-attention and spatial guidance.</figcaption>
       </figure>
+      <figure class="figure reveal zoomable">
+        <img src="static/img/fig4_beyond_resolution.webp" alt="Generation beyond training resolutions" loading="lazy">
+        <figcaption><b>Recursive refinement, level by level.</b> The same operator, trained on 512<sup>3</sup>&ndash;1024<sup>3</sup> pairs, refines 1024<sup>3</sup> &rarr; 2048<sup>3</sup> &rarr; 4096<sup>3</sup>: generation beyond the training resolutions.</figcaption>
+      </figure>
       <div class="cards">
         <article class="card reveal">
           <div class="card-icon"><svg viewBox="0 0 24 24"><path d="M4 18h4v-4H4v4zm6 0h4v-8h-4v8zm6 0h4V6h-4v12z" fill="currentColor"/></svg></div>
@@ -157,68 +165,10 @@
     </div>
   </section>
 
-  <section id="compare" class="section">
-    <div class="wrap">
-      <div class="section-head reveal">
-        <span class="kicker">03 · Interactive comparison</span>
-        <h2>Look closer</h2>
-        <p>Pick an object and a region. Every method is generated from the same input image and rendered with its own fitted camera at the same region, magnification, material and lighting. Drag any panel to turn the detail.</p>
-      </div>
-      <div class="compare reveal" id="cmp">
-        <div class="compare-top">
-          <div class="asset-tabs" id="cmpAssets" role="tablist" aria-label="Object"></div>
-          <div class="view-tabs" role="tablist" aria-label="View">
-            <button class="active" data-view="detail">Details</button><button data-view="whole">Whole object</button>
-          </div>
-        </div>
-
-        <div class="dv" id="dvView">
-          <div class="dv-left">
-            <div class="dv-input">
-              <img id="dvInput" alt="Input image">
-              <div class="dv-box" id="dvBox"></div>
-              <span class="tag">Input image</span>
-            </div>
-            <div class="detail-tabs" id="dvTabs" role="tablist" aria-label="Region"></div>
-            <div class="dv-crop zoomable">
-              <img id="dvCrop" alt="Input image, same region">
-              <span class="tag">Input image &middot; same region</span>
-            </div>
-          </div>
-          <div class="dv-right">
-            <div class="pane is-ours dv-ours zoomable" data-m="ours"><img alt="SuperFine3D" draggable="false"><span class="tag">SuperFine3D <small>4096³ · ours</small></span></div>
-            <div class="dv-bases" id="dvBases"></div>
-          </div>
-        </div>
-        <div class="compare-controls" id="dvControls">
-          <button class="play" id="dvPlay" aria-label="Pause"><svg viewBox="0 0 24 24"><path id="dvPlayIcon" fill="currentColor" d="M6 5h4v14H6zm8 0h4v14h-4z"/></svg></button>
-          <input type="range" id="dvSlider" min="0" max="8" value="4" aria-label="Turn the detail">
-          <span class="angle" id="dvAngle">0&deg;</span>
-        </div>
-
-        <div id="ttView" hidden>
-          <div class="method-tabs" role="tablist" aria-label="Baseline"></div>
-          <div class="compare-body">
-            <div class="compare-input">
-              <img alt="Input image" id="ttInput">
-              <span>Input image</span>
-            </div>
-            <div class="panes" id="ttPanes"></div>
-          </div>
-          <div class="compare-controls">
-            <button class="play" id="ttPlay" aria-label="Pause rotation"><svg viewBox="0 0 24 24"><path id="ttPlayIcon" fill="currentColor" d="M6 5h4v14H6zm8 0h4v14h-4z"/></svg></button>
-            <input type="range" id="ttSlider" min="0" max="24" value="12" aria-label="Rotation">
-            <span class="angle" id="ttAngle">0&deg;</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
   <section class="section">
     <div class="wrap">
       <div class="section-head reveal">
-        <span class="kicker">04 · Comparison with existing methods</span>
+        <span class="kicker">03 · Comparison with existing methods</span>
         <h2>Detail that follows the image</h2>
         <p>Inputs are 4096&thinsp;px images generated with Nano Banana Pro, identical for all methods.</p>
       </div>
@@ -240,10 +190,6 @@
             <img src="static/img/supp_offview.webp" alt="Detail holds off the input view" loading="lazy">
             <figcaption><b>Detail holds off the input view.</b> Each close-up is rendered with the object turned by 30&deg; about the vertical axis through the region. The relief transferred from the input image keeps its shape and depth in the turned view.</figcaption>
           </figure>
-          <figure class="figure reveal zoomable">
-            <img src="static/img/fig4_beyond_resolution.webp" alt="Generation beyond training resolutions" loading="lazy">
-            <figcaption><b>Generation beyond training resolutions.</b> The same operator, trained on 512<sup>3</sup>&ndash;1024<sup>3</sup> pairs, refines 1024<sup>3</sup> &rarr; 2048<sup>3</sup> &rarr; 4096<sup>3</sup>.</figcaption>
-          </figure>
         </div>
       </div>
     </div>
@@ -252,7 +198,7 @@
   <section class="section">
     <div class="wrap">
       <div class="section-head reveal">
-        <span class="kicker">05 · Faithful to the image</span>
+        <span class="kicker">04 · Faithful to the image</span>
         <h2>Relief, not paint</h2>
         <p>Grain stripes, dark patina and painted patterns stay in the image; carved relief goes into the geometry.</p>
       </div>
@@ -270,7 +216,7 @@
   <section class="section">
     <div class="wrap">
       <div class="section-head reveal">
-        <span class="kicker">06 · Two views</span>
+        <span class="kicker">05 · Two views</span>
         <h2>More views, truer pose</h2>
         <p>With the same pipeline, a second input view resolves what a single view cannot see.</p>
       </div>
@@ -284,7 +230,7 @@
   <section id="results" class="section">
     <div class="wrap">
       <div class="section-head reveal">
-        <span class="kicker">07 · Quantitative results</span>
+        <span class="kicker">06 · Quantitative results</span>
         <h2>Best detail, closest to the image</h2>
         <p>Geometric quality on Toys4K. Distances are scaled by 10<sup>3</sup>; F-scores are percentages. Corr: image-space normal correlation in the 4&ndash;16 px and 16&ndash;64 px bands.</p>
       </div>
@@ -314,7 +260,7 @@
   <section id="efficiency" class="section">
     <div class="wrap">
       <div class="section-head reveal">
-        <span class="kicker">08 · Efficiency</span>
+        <span class="kicker">07 · Efficiency</span>
         <h2>Faster at every level</h2>
         <p>Latency of the first DiT block on eight assets spanning 143,440&ndash;708,592 HR tokens: identical HR coordinates, noise, image conditioning, batch size one and BF16 on the same GPU; median of nine synchronized measurements.</p>
       </div>
@@ -369,6 +315,8 @@
 
 <div class="lightbox" id="lightbox" aria-hidden="true"><img alt=""><button aria-label="Close">&times;</button></div>
 
-<script src="static/js/main.js?v=20261120c"></script>
+<script src="static/js/main.js?v=20261120e"></script>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
+<script type="module" src="static/js/viewer3d.js?v=20261120e"></script>
 </body>
 </html>
