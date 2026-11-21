@@ -1,7 +1,6 @@
 # SuperFine3D project page
 
-Project page of **SuperFine3D: Efficient Global-Local Recursive Refinement for Extremely Detailed 3D Geometry Generation**
-(Lihan Li, Junwei Zhou, Yu-Wing Tai · Dartmouth College).
+Project page of **SuperFine3D: Efficient Global-Local Recursive Refinement for Extremely Detailed 3D Geometry Generation**.
 
 **https://lihhan.github.io/SuperFine3D-page/**
 

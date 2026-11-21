@@ -66,7 +66,7 @@ sup { font-size: 0.6em; line-height: 0; }
 .eyebrow .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ours); box-shadow: 0 0 10px var(--ours); }
 .title { font-family: var(--serif); font-weight: 400; font-size: clamp(64px, 9vw, 116px); line-height: .95; letter-spacing: -0.02em; margin: 22px 0 14px; }
 .grad { font-style: italic; background: linear-gradient(100deg, #fff 0%, var(--ours-2) 35%, var(--ours) 75%); -webkit-background-clip: text; background-clip: text; color: transparent; padding-right: .06em; }
-.subtitle { font-size: clamp(18px, 2vw, 22px); color: #cfd6e4; line-height: 1.4; margin: 0 0 22px; max-width: 30em; }
+.subtitle { font-size: clamp(18px, 2vw, 22px); color: #cfd6e4; line-height: 1.4; margin: 0 0 30px; max-width: 30em; }
 .authors { margin: 0; display: flex; flex-wrap: wrap; gap: 6px 22px; font-weight: 600; font-size: 17px; }
 .affil { margin: 4px 0 26px; color: var(--muted); }
 .buttons { display: flex; flex-wrap: wrap; gap: 10px; }
