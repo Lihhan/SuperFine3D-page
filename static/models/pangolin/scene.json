@@ -26,99 +26,99 @@
  ],
  "files": {
   "whole_ours": {
-   "v": 930239,
-   "f": 1990681,
-   "bytes": 11868157
+   "v": 840023,
+   "f": 1992363,
+   "bytes": 11571607
   },
   "h0_ours": {
-   "v": 649956,
-   "f": 1331708,
-   "bytes": 8529020,
-   "faces_full": 2797987
+   "v": 690808,
+   "f": 1461707,
+   "bytes": 8553745,
+   "faces_full": 3058838
   },
   "h1_ours": {
-   "v": 688248,
-   "f": 1365494,
-   "bytes": 8289889,
-   "faces_full": 5017797
+   "v": 750004,
+   "f": 1548079,
+   "bytes": 9140712,
+   "faces_full": 5217363
   },
   "h2_ours": {
-   "v": 658401,
-   "f": 1342297,
-   "bytes": 8442486,
-   "faces_full": 2885484
+   "v": 676352,
+   "f": 1417074,
+   "bytes": 8399449,
+   "faces_full": 3102779
   },
   "whole_trellis2": {
-   "v": 397149,
-   "f": 856140,
-   "bytes": 5431926,
+   "v": 393608,
+   "f": 848880,
+   "bytes": 5387015,
    "faces_full": 30887656
   },
   "h0_trellis2": {
-   "v": 368423,
-   "f": 730983,
-   "bytes": 4600030,
-   "faces_full": 730983
+   "v": 397916,
+   "f": 791601,
+   "bytes": 4822559,
+   "faces_full": 730095
   },
   "h1_trellis2": {
-   "v": 309059,
-   "f": 614741,
-   "bytes": 3746539,
-   "faces_full": 614741
+   "v": 336971,
+   "f": 671858,
+   "bytes": 4081947,
+   "faces_full": 613806
   },
   "h2_trellis2": {
-   "v": 311814,
-   "f": 617877,
-   "bytes": 3944080,
-   "faces_full": 617877
+   "v": 338832,
+   "f": 672654,
+   "bytes": 4211080,
+   "faces_full": 617188
   },
   "whole_hunyuan21": {
-   "v": 427674,
-   "f": 855642,
-   "bytes": 5372214,
+   "v": 428320,
+   "f": 856930,
+   "bytes": 5380676,
    "faces_full": 10995772
   },
   "h0_hunyuan21": {
-   "v": 102926,
-   "f": 204276,
-   "bytes": 1274941,
-   "faces_full": 204276
+   "v": 131052,
+   "f": 258836,
+   "bytes": 1566863,
+   "faces_full": 203563
   },
   "h1_hunyuan21": {
-   "v": 162632,
-   "f": 323503,
-   "bytes": 1932779,
-   "faces_full": 323503
+   "v": 205888,
+   "f": 409005,
+   "bytes": 2479589,
+   "faces_full": 322560
   },
   "h2_hunyuan21": {
-   "v": 21965,
-   "f": 43015,
-   "bytes": 271810,
-   "faces_full": 43015
+   "v": 57156,
+   "f": 112185,
+   "bytes": 708554,
+   "faces_full": 41568
   },
   "whole_pixal3d": {
-   "v": 417683,
-   "f": 883053,
-   "bytes": 5412934,
+   "v": 425694,
+   "f": 899290,
+   "bytes": 5515118,
    "faces_full": 22333636
   },
   "h0_pixal3d": {
-   "v": 202975,
-   "f": 411375,
-   "bytes": 2630420,
-   "faces_full": 411375
+   "v": 235503,
+   "f": 479052,
+   "bytes": 2852220,
+   "faces_full": 411440
   },
   "h1_pixal3d": {
-   "v": 342743,
-   "f": 687602,
-   "bytes": 4048342,
-   "faces_full": 687602
+   "v": 386066,
+   "f": 775810,
+   "bytes": 4520286,
+   "faces_full": 687647
   },
   "h2_pixal3d": {
-   "v": 214200,
-   "f": 430799,
-   "bytes": 2723510,
-   "faces_full": 430799
+   "v": 239210,
+   "f": 480873,
+   "bytes": 2926431,
+   "faces_full": 430771
   }
  },
  "hotspots": [
@@ -168,32 +168,32 @@
  "align": {
   "trellis2": {
    "anisotropy": 3.435224476359543,
-   "icp_rot_deg": 5.260813558324976,
-   "icp_scale": 1.2112615294216849,
-   "trimmed_rms_before": 0.03214618962994397,
-   "trimmed_rms_after": 0.011190909020360554,
-   "hot0_shift_over_r": 0.342,
-   "hot1_shift_over_r": 0.385,
-   "hot2_shift_over_r": 0.414
+   "icp_rot_deg": 5.134285094620666,
+   "icp_scale": 1.211957276279268,
+   "trimmed_rms_before": 0.03304624327906288,
+   "trimmed_rms_after": 0.01116770304516873,
+   "hot0_shift_over_r": 0.334,
+   "hot1_shift_over_r": 0.377,
+   "hot2_shift_over_r": 0.413
   },
   "hunyuan21": {
    "anisotropy": 2.967378801726472,
-   "icp_rot_deg": 3.9523224184570998,
-   "icp_scale": 1.1913900636192476,
-   "trimmed_rms_before": 0.03370354481047214,
-   "trimmed_rms_after": 0.0094203167220933,
-   "hot0_shift_over_r": 0.183,
-   "hot1_shift_over_r": 0.198,
+   "icp_rot_deg": 3.8669989561859883,
+   "icp_scale": 1.1933004549765243,
+   "trimmed_rms_before": 0.034157992866047,
+   "trimmed_rms_after": 0.009297015649307908,
+   "hot0_shift_over_r": 0.168,
+   "hot1_shift_over_r": 0.188,
    "hot2_shift_over_r": 0.0
   },
   "pixal3d": {
    "anisotropy": 1.0621274513664145,
-   "icp_rot_deg": 0.6653564707342445,
-   "icp_scale": 1.015305549153638,
-   "trimmed_rms_before": 0.003677527202600022,
-   "trimmed_rms_after": 0.0017962565680084658,
+   "icp_rot_deg": 0.6664770796498564,
+   "icp_scale": 1.0152930846398573,
+   "trimmed_rms_before": 0.0035993979452736535,
+   "trimmed_rms_after": 0.0016703746389120594,
    "hot0_shift_over_r": 0.031,
-   "hot1_shift_over_r": 0.01,
+   "hot1_shift_over_r": 0.009,
    "hot2_shift_over_r": 0.028
   }
  },
@@ -215,5 +215,5 @@
   ],
   "fov": 25.00612553478128
  },
- "total_mb": 78.5
+ "total_mb": 82.1
 }

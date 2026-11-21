@@ -6,8 +6,10 @@ const root = document.getElementById('v3d');
 if (root) init(root);
 
 function init(root) {
+  const MODEL_V = '20261120h';   // bump when the model files change (cache busting)
   const OBJECTS = [
     { slug: 'pangolin', name: 'Ceremonial pangolin', input: 'static/models/pangolin/input.webp' },
+    { slug: 'nautilus', name: 'Clockwork nautilus', input: 'static/models/nautilus/input.webp' },
   ];
   const canvas = root.querySelector('canvas');
   const ui = {
@@ -67,7 +69,7 @@ function init(root) {
     st.obj = i; st.hot = -1; st.cmp = 0; const tok = ++st.token; const o = OBJECTS[i];
     ui.input.src = o.input; ui.input.alt = 'Input image: ' + o.name; ui.back.hidden = true; root.classList.remove('in-hot');
     setStatus('Loading ' + o.name + '…', 0.02);
-    st.scene = await (await fetch(`static/models/${o.slug}/scene.json`)).json(); if (tok !== st.token) return;
+    st.scene = await (await fetch(`static/models/${o.slug}/scene.json?v=${MODEL_V}`)).json(); if (tok !== st.token) return;
     const ci = st.scene.methods.findIndex((m) => m.key === opts.cmp); if (ci > 0) st.cmp = ci;   // deep link: ?obj=owl&cmp=trellis2&hot=1
     const hi = st.scene.hotspots.findIndex((h) => h.label === opts.hot);
     buildCompareTabs(); buildHotspots(); resetView(false);
@@ -77,7 +79,7 @@ function init(root) {
     }
     await showMeshes(tok);
   }
-  function file(name) { const f = st.scene.files[name]; return f ? `static/models/${st.scene.slug}/${name}.bin.gz` : null; }
+  function file(name) { const f = st.scene.files[name]; return f ? `static/models/${st.scene.slug}/${name}.bin.gz?v=${MODEL_V}` : null; }
   async function showMeshes(tok) {
     const part = st.hot < 0 ? 'whole' : 'h' + st.hot;
     const keys = ['ours', st.cmp ? st.scene.methods[st.cmp].key : null];
