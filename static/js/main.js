@@ -95,9 +95,9 @@
     svg.addEventListener('pointerleave', () => { tip.style.opacity = 0; cross.setAttribute('opacity', 0); });
   };
   chart($('#chartAttn'), 'One attention layer', 'Full self-attention (FlashAttention-2) vs. spatial-cell attention', '525×',
-    [{ name: 'Full attention', color: '#6d93ff', pts: DATA.AttnFull }, { name: 'Ours', color: '#ff9a4a', pts: DATA.AttnOurs }]);
+    [{ name: 'Full attention', color: '#8a93a8', pts: DATA.AttnFull }, { name: 'Ours', color: '#e2b65a', pts: DATA.AttnOurs }]);
   chart($('#chartBlock'), 'One DiT block', 'TRELLIS.2 block (full attention) vs. ours with fused kernels', '28×',
-    [{ name: 'TRELLIS.2 block', color: '#6d93ff', pts: DATA.Official }, { name: 'Ours', color: '#ff9a4a', pts: DATA.Ours }]);
+    [{ name: 'TRELLIS.2 block', color: '#8a93a8', pts: DATA.Official }, { name: 'Ours', color: '#e2b65a', pts: DATA.Ours }]);
 
   // ---------- bibtex copy
   const cb = $('#copyBib');

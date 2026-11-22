@@ -9,15 +9,13 @@
 <meta property="og:description" content="Recursive global-local refinement turns a single image into 4096³ geometry in about three minutes on one GPU.">
 <meta property="og:image" content="static/img/fig1_teaser.jpg">
 <meta name="theme-color" content="#0a0d14">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23ffd29a'/%3E%3Cstop offset='1' stop-color='%23ff8a3d'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='14' fill='%230a0d14'/%3E%3Cpath d='M14 46 L32 12 L50 46 Z' fill='none' stroke='url(%23g)' stroke-width='5' stroke-linejoin='round'/%3E%3Cpath d='M23 46 L32 29 L41 46' fill='none' stroke='url(%23g)' stroke-width='4' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23fbf0c9'/%3E%3Cstop offset='1' stop-color='%23b98a32'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='14' fill='%230a0d14'/%3E%3Cpath d='M14 46 L32 12 L50 46 Z' fill='none' stroke='url(%23g)' stroke-width='5' stroke-linejoin='round'/%3E%3Cpath d='M23 46 L32 29 L41 46' fill='none' stroke='url(%23g)' stroke-width='4' stroke-linejoin='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="static/css/style.css?v=20261121b">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400..600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="static/css/style.css?v=20261122e">
 </head>
 <body>
-<div class="grain" aria-hidden="true"></div>
-
 <nav class="nav" id="nav">
   <div class="nav-inner">
     <a class="brand" href="#top"><span class="brand-mark"></span>SuperFine3D</a>
@@ -76,19 +74,19 @@
   </div>
 
   <div class="wrap stats reveal">
-    <div class="stat"><div class="num"><span class="count" data-to="4096">4096</span><sup>3</sup></div><div class="lbl">decoder-grid resolution<br>(sparse 256<sup>3</sup> latent lattice)</div></div>
-    <div class="stat"><div class="num"><span class="count" data-to="176.2" data-dec="1">176.2</span><small>s</small></div><div class="lbl">image &rarr; 4096<sup>3</sup> mesh<br>on one GPU</div></div>
+    <div class="stat"><div class="num">4096<sup>3</sup></div><div class="lbl">decoder-grid resolution<br>(sparse 256<sup>3</sup> latent lattice)</div></div>
     <div class="stat"><div class="num"><span class="count" data-to="9.4" data-dec="1">9.4</span><small>&times;</small></div><div class="lbl">faster than a full-attention<br>recursive baseline</div></div>
     <div class="stat"><div class="num"><span class="count" data-to="525">525</span><small>&times;</small></div><div class="lbl">faster attention layer<br>at 708k tokens</div></div>
     <div class="stat"><div class="num"><span class="count" data-to="28">28</span><small>&times;</small></div><div class="lbl">faster DiT block<br>at 708k tokens</div></div>
   </div>
+
 </header>
 
 <main>
   <section id="video" class="section">
     <div class="wrap">
       <div class="section-head reveal">
-        <span class="kicker">01 · Video</span>
+        <span class="kicker">Video</span>
         <h2>Three minutes of fine geometry</h2>
         <p>Efficiency at every level, whole-object comparisons with TRELLIS.2, Hunyuan3D-2.1, Pixal3D and UltraShape turning in sync, and close-ups at high magnification.</p>
       </div>
@@ -101,8 +99,9 @@
   </section>
 
   <section id="abstract" class="section section-tight">
-    <div class="wrap narrow reveal">
-      <span class="kicker">Abstract</span>
+    <div class="wrap reveal">
+      <div class="abs">
+      <h2>Abstract</h2>
       <p class="abstract">
         High-resolution images contain rich visual details that require fine geometric structures for faithful 3D reconstruction.
         However, generating extremely detailed 3D geometry from images requires substantial computational resources and training data,
@@ -121,13 +120,14 @@
         reduces peak GPU memory usage by <b>23.0%</b>, while improving cross-scale structural consistency and producing cleaner surfaces
         with finer geometric details.
       </p>
+      </div>
     </div>
   </section>
 
   <section id="method" class="section">
     <div class="wrap">
       <div class="section-head reveal">
-        <span class="kicker">02 · Method</span>
+        <span class="kicker">Method</span>
         <h2>One operator, applied recursively</h2>
         <p>A pretrained generator produces a coarse 512<sup>3</sup> shape, from which the input camera is estimated. At every level, detail normals estimated from the input image are injected into the current mesh; the corrected mesh is encoded at twice the resolution, partially noised, and refined by the shared refinement network conditioned on the preceding latent and the image.</p>
       </div>
@@ -141,22 +141,22 @@
       </figure>
       <div class="cards">
         <article class="card reveal">
-          <div class="card-icon"><svg viewBox="0 0 24 24"><path d="M4 18h4v-4H4v4zm6 0h4v-8h-4v8zm6 0h4V6h-4v12z" fill="currentColor"/></svg></div>
+          <span class="card-num">01</span>
           <h3>Recursive refinement</h3>
           <p>A shared refinement operator learned from paired coarse-to-fine representations is reused to synthesize geometry beyond the training resolutions, without paired supervision at the target resolutions.</p>
         </article>
         <article class="card reveal">
-          <div class="card-icon"><svg viewBox="0 0 24 24"><path d="M3 3h8v8H3V3zm10 0h8v8h-8V3zM3 13h8v8H3v-8zm10 0h8v8h-8v-8z" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></div>
+          <span class="card-num">02</span>
           <h3>Spatial-cell attention</h3>
           <p>High-resolution interactions are restricted to local spatial neighborhoods while bounded communication across neighboring cells is maintained.</p>
         </article>
         <article class="card reveal">
-          <div class="card-icon"><svg viewBox="0 0 24 24"><path d="M12 3v18M3 12h18M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></div>
+          <span class="card-num">03</span>
           <h3>Cross-scale guidance</h3>
           <p>Spatially anchored guidance from globally contextualized coarse geometry steers local detail synthesis and preserves structural consistency.</p>
         </article>
         <article class="card reveal">
-          <div class="card-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8 13c1.5 2 6.5 2 8 0M9 9.5h.01M15 9.5h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg></div>
+          <span class="card-num">04</span>
           <h3>Geometry-aware training</h3>
           <p>Objectives on the decoded geometry keep stable structures unchanged and introduce fine-grained surface detail where the target changes.</p>
         </article>
@@ -171,7 +171,7 @@
   <section class="section">
     <div class="wrap">
       <div class="section-head reveal">
-        <span class="kicker">03 · Comparison with existing methods</span>
+        <span class="kicker">Comparison with existing methods</span>
         <h2>Detail that follows the image</h2>
         <p>Inputs are 4096&thinsp;px images generated with Nano Banana Pro, identical for all methods.</p>
       </div>
@@ -201,8 +201,8 @@
   <section class="section">
     <div class="wrap">
       <div class="section-head reveal">
-        <span class="kicker">04 · Faithful to the image</span>
-        <h2>Relief, not paint</h2>
+        <span class="kicker">Faithful to the image</span>
+        <h2>Carvings become geometry, paint does not</h2>
         <p>Grain stripes, dark patina and painted patterns stay in the image; carved relief goes into the geometry.</p>
       </div>
       <figure class="figure reveal zoomable">
@@ -219,7 +219,7 @@
   <section class="section">
     <div class="wrap">
       <div class="section-head reveal">
-        <span class="kicker">05 · Two views</span>
+        <span class="kicker">Two views</span>
         <h2>More views, truer pose</h2>
         <p>With the same pipeline, a second input view resolves what a single view cannot see.</p>
       </div>
@@ -233,7 +233,7 @@
   <section id="results" class="section">
     <div class="wrap">
       <div class="section-head reveal">
-        <span class="kicker">06 · Quantitative results</span>
+        <span class="kicker">Quantitative results</span>
         <h2>Best detail, closest to the image</h2>
         <p>Geometric quality on Toys4K. Distances are scaled by 10<sup>3</sup>; F-scores are percentages. Corr: image-space normal correlation in the 4&ndash;16 px and 16&ndash;64 px bands.</p>
       </div>
@@ -263,7 +263,7 @@
   <section id="efficiency" class="section">
     <div class="wrap">
       <div class="section-head reveal">
-        <span class="kicker">07 · Efficiency</span>
+        <span class="kicker">Efficiency</span>
         <h2>Faster at every level</h2>
         <p>Latency of the first DiT block on eight assets spanning 143,440&ndash;708,592 HR tokens: identical HR coordinates, noise, image conditioning, batch size one and BF16 on the same GPU; median of nine synchronized measurements.</p>
       </div>
@@ -294,8 +294,9 @@
   </section>
 
   <section id="bibtex" class="section section-tight">
-    <div class="wrap narrow reveal">
-      <span class="kicker">Citation</span>
+    <div class="wrap reveal">
+      <div class="abs">
+      <h2>Citation</h2>
       <div class="bib">
         <button class="copy" id="copyBib">Copy</button>
 <pre id="bibText">@misc{superfine3d2026,
@@ -304,6 +305,7 @@
   author = {Anonymous},
   year   = {2026}
 }</pre>
+      </div>
       </div>
     </div>
   </section>
@@ -318,7 +320,7 @@
 
 <div class="lightbox" id="lightbox" aria-hidden="true"><img alt=""><button aria-label="Close">&times;</button></div>
 
-<script src="static/js/main.js?v=20261120i"></script>
+<script src="static/js/main.js?v=20261122c"></script>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
 <script type="module" src="static/js/viewer3d.js?v=20261121f"></script>
 </body>
