@@ -1,4 +1,4 @@
-// Interactive 3D comparison for the hero: SuperFine3D next to a chosen comparison, one shared camera.
+// Interactive comparison for the hero: by default the input image | SuperFine3D slider; 3D: SuperFine3D next to a chosen method, one shared camera.
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
@@ -68,20 +68,21 @@ function init(root) {
 
   // ---------- scene switching
   async function loadObject(i, opts = {}) {
+    const prevKey = !st.ab && st.cmp && st.scene ? st.scene.methods[st.cmp].key : null;   // keep a chosen baseline across objects
     st.obj = i; st.hot = -1; st.cmp = 0; const tok = ++st.token; const o = OBJECTS[i];
     ui.input.src = o.input; ui.input.alt = 'Input image: ' + o.name; ui.back.hidden = true; root.classList.remove('in-hot');
     setStatus('Loading ' + o.name + '…', 0.02);
     st.scene = await (await fetch(`static/models/${o.slug}/scene.json?v=${MODEL_V}`)).json(); if (tok !== st.token) return;
-    const ci = st.scene.methods.findIndex((m) => m.key === opts.cmp); if (ci > 0) st.cmp = ci;   // deep link: ?obj=owl&cmp=trellis2&hot=1
-    if (opts.cmp === 'input') st.ab = true;                                                      // ?cmp=input[&cut=0.3&zoom=3&at=0.5,0.2]
-    if (st.ab && !o.ab) st.ab = false;
+    const ci = st.scene.methods.findIndex((m) => m.key === (opts.cmp || prevKey)); if (ci > 0) st.cmp = ci;   // deep link: ?obj=owl&cmp=trellis2&hot=1
     const hi = st.scene.hotspots.findIndex((h) => h.label === opts.hot);
+    st.ab = !!o.ab && (opts.cmp === 'input' || (ci <= 0 && hi < 0));   // default view: the input image | 3D slider (?cut=0.3&zoom=3&at=0.5,0.2)
     buildCompareTabs(); buildHotspots(); resetView(false);
     setAB(st.ab, opts);
     if (hi >= 0) {
       st.hot = hi; const h = st.scene.hotspots[hi]; ui.back.hidden = false; root.classList.add('in-hot');
       camera.position.set(...h.view); controls.target.set(...h.p); controls.update();
     }
+    if (st.ab) { setStatus('', null); root.classList.remove('split'); return; }   // meshes are loaded when a 3D comparison is chosen
     await showMeshes(tok);
   }
   function file(name) { const f = st.scene.files[name]; return f ? `static/models/${st.scene.slug}/${name}.bin.gz?v=${MODEL_V}` : null; }
@@ -108,14 +109,13 @@ function init(root) {
   }
   function buildCompareTabs() {
     const ms = st.scene.methods, btn = (i, label) => `<button data-i="${i}">${label}</button>`;
-    ui.compare.innerHTML = '<span>Compare with</span>' + btn(0, 'None') + (OBJECTS[st.obj].ab ? btn(-1, 'Input image') : '')
+    ui.compare.innerHTML = '<span>Compare with</span>' + (OBJECTS[st.obj].ab ? btn(-1, 'Input image') : '')
       + ms.slice(1).map((m, i) => btn(i + 1, m.name)).join('');
     markCompareTabs();
     ui.compare.querySelectorAll('button').forEach((b) => b.addEventListener('click', () => {
       const i = +b.dataset.i;
       if (i < 0) { setAB(true); return; }
-      const was = st.cmp; st.cmp = i; setAB(false);
-      if (i !== was) showMeshes(++st.token);
+      st.cmp = i; setAB(false); showMeshes(++st.token);   // cached meshes are reused
     }));
   }
   function markCompareTabs() { ui.compare.querySelectorAll('button').forEach((x) => x.classList.toggle('active', st.ab ? x.dataset.i === '-1' : +x.dataset.i === st.cmp)); }
@@ -163,7 +163,9 @@ function init(root) {
     ui.abPL.style.clipPath = `inset(0 ${W - lx}px 0 0)`; ui.abLine.style.left = lx + 'px';
     ui.abLine.setAttribute('aria-valuenow', String(Math.round(((lx - x0) / Math.max(x1 - x0, 1)) * 100)));
     ui.abTagP.style.left = x0 + 14 + 'px'; ui.abTagP.style.opacity = lx - x0 > ui.abTagP.offsetWidth + 32 ? 1 : 0;
-    ui.abTagR.style.right = W - x1 + 14 + 'px'; ui.abTagR.style.opacity = x1 - lx > ui.abTagR.offsetWidth + 32 ? 1 : 0;
+    ui.abTagR.style.right = W - x1 + 14 + 'px'; ui.abTagR.classList.remove('compact');
+    if (x1 - lx < ui.abTagR.offsetWidth + 32) ui.abTagR.classList.add('compact');   // short label first, hidden only if even that does not fit
+    ui.abTagR.style.opacity = x1 - lx > ui.abTagR.offsetWidth + 32 ? 1 : 0;
     ui.ab.classList.toggle('pan', ab.z > 1.001);
   }
   function abZoomAt(cx, cy, k) {
