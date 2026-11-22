@@ -10,6 +10,7 @@ function init(root) {
   const OBJECTS = [
     { slug: 'pangolin', name: 'Ceremonial pangolin', input: 'static/models/pangolin/input.webp', ab: true },
     { slug: 'nautilus', name: 'Clockwork nautilus', input: 'static/models/nautilus/input.webp', ab: true },
+    { slug: 'owl', name: 'Armoured owl', input: 'static/models/owl/input.webp', ab: true, abOnly: true },   // slider only (no 3D files)
     { slug: 'helmet', name: 'Octopus diving helmet', input: 'static/models/helmet/input.webp', ab: true, abOnly: true },   // slider only (no 3D files)
   ];
   const canvas = root.querySelector('canvas');
