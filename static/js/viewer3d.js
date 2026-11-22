@@ -10,8 +10,6 @@ function init(root) {
   const OBJECTS = [
     { slug: 'pangolin', name: 'Ceremonial pangolin', input: 'static/models/pangolin/input.webp', ab: true },
     { slug: 'nautilus', name: 'Clockwork nautilus', input: 'static/models/nautilus/input.webp', ab: true },
-    { slug: 'owl', name: 'Armoured owl', input: 'static/models/owl/input.webp', ab: true, abOnly: true },               // slider only (no 3D files)
-    { slug: 'helmet', name: 'Octopus diving helmet', input: 'static/models/helmet/input.webp', ab: true, abOnly: true },
   ];
   const canvas = root.querySelector('canvas');
   const ui = {
@@ -73,10 +71,6 @@ function init(root) {
     const prevKey = !st.ab && st.cmp && st.scene ? st.scene.methods[st.cmp].key : null;   // keep a chosen baseline across objects
     st.obj = i; st.hot = -1; st.cmp = 0; const tok = ++st.token; const o = OBJECTS[i];
     ui.input.src = o.input; ui.input.alt = 'Input image: ' + o.name; ui.back.hidden = true; root.classList.remove('in-hot');
-    if (o.abOnly) {   // input image | 3D slider only: no scene, no meshes
-      st.scene = { slug: o.slug, methods: [{ key: 'ours', name: 'SuperFine3D', res: '4096³' }], hotspots: [], files: {} };
-      st.ab = true; buildCompareTabs(); buildHotspots(); setAB(true, opts); setStatus('', null); root.classList.remove('split'); return;
-    }
     setStatus('Loading ' + o.name + '…', 0.02);
     st.scene = await (await fetch(`static/models/${o.slug}/scene.json?v=${MODEL_V}`)).json(); if (tok !== st.token) return;
     const ci = st.scene.methods.findIndex((m) => m.key === (opts.cmp || prevKey)); if (ci > 0) st.cmp = ci;   // deep link: ?obj=owl&cmp=trellis2&hot=1
