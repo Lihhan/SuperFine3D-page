@@ -114,8 +114,8 @@ span.nav-cta { color: var(--muted); background: transparent; border: 1px solid v
 .card h3 { margin: 0 0 10px; font-size: 19px; font-weight: 550; letter-spacing: -0.025em; color: var(--text); }
 .card p { margin: 0; color: var(--muted); font-size: 15px; line-height: 1.6; }
 
-.split { display: grid; grid-template-columns: 1.15fr 1fr; gap: 28px; align-items: start; }
-.split > div { position: sticky; top: 88px; }   /* the shorter column stays in view next to the tall one */
+.fig-split { display: grid; grid-template-columns: 1.15fr 1fr; gap: 28px; align-items: start; }
+.fig-split > div { position: sticky; top: 88px; }   /* the shorter column stays in view next to the tall one */
 .duo { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
 .tile { margin: 0; }
 .tile img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 14px; border: 1px solid var(--line); }
@@ -198,8 +198,8 @@ td b { color: var(--ours); font-weight: 600; }
   .stat:nth-child(3) { border-left: 0; padding-left: 0; }
   .cards { grid-template-columns: 1fr 1fr; }
   .charts { grid-template-columns: 1fr; }
-  .split { grid-template-columns: 1fr; }
-  .split > div { position: static; }
+  .fig-split { grid-template-columns: 1fr; }
+  .fig-split > div { position: static; }
   .nav-links { display: none; }
   .nav-cta { margin-left: auto; }
 }
@@ -230,7 +230,7 @@ td b { color: var(--ours); font-weight: 600; }
 .v3d canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; cursor: grab; touch-action: none; }
 .v3d canvas:active { cursor: grabbing; }
 .v3d:fullscreen { aspect-ratio: auto; width: 100vw; height: 100vh; border-radius: 0; }
-.v3d-top { position: absolute; top: 12px; left: 12px; right: 12px; display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; pointer-events: none; }
+.v3d-top { position: absolute; z-index: 3; top: 12px; left: 12px; right: 12px; display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; pointer-events: none; }
 .v3d-objects { display: flex; flex-wrap: wrap; gap: 6px; pointer-events: auto; }
 .v3d-objects button, .v3d-compare button { font: inherit; font-size: 13px; font-weight: 600; color: #cfd6e4; background: rgba(10, 13, 20, .66); border: 1px solid var(--line-2);
   padding: 6px 12px; border-radius: 999px; cursor: pointer; backdrop-filter: blur(8px); transition: all .2s; }

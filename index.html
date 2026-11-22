@@ -13,7 +13,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400..600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="static/css/style.css?v=20261122e">
+<link rel="stylesheet" href="static/css/style.css?v=20261122f">
 </head>
 <body>
 <nav class="nav" id="nav">
@@ -25,7 +25,6 @@
       <a href="#top">3D</a>
       <a href="#results">Results</a>
       <a href="#efficiency">Efficiency</a>
-      <a href="#bibtex">BibTeX</a>
     </div>
     <span class="nav-cta" title="Coming soon">Code <em style="font-style:normal;font-size:11px;opacity:.7">soon</em></span>
   </div>
@@ -42,7 +41,6 @@
         <a class="btn btn-primary" href="#video"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>Watch video</a>
         <span class="btn btn-ghost" title="Coming soon"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M9.4 16.6 4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0 4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg>Code <em>soon</em></span>
         <span class="btn btn-ghost" title="Coming soon"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/></svg>Paper <em>soon</em></span>
-        <a class="btn" href="#bibtex"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M6 2h9l5 5v15H6V2zm8 1.5V8h4.5L14 3.5zM8 12h8v1.5H8V12zm0 3h8v1.5H8V15zm0 3h5v1.5H8V18z"/></svg>BibTeX</a>
       </div>
     </div>
     <div class="hero-stage reveal">
@@ -92,7 +90,7 @@
       </div>
       <div class="video-card reveal">
         <video controls preload="metadata" playsinline poster="static/img/video_poster.jpg">
-          <source src="static/video/superfine3d_video.mp4" type="video/mp4">
+          <source src="static/video/superfine3d_video.mp4?v=20261122" type="video/mp4">
         </video>
       </div>
     </div>
@@ -183,14 +181,14 @@
         <img src="static/img/fig1_teaser.webp" alt="High-resolution geometry with fine detail and efficient inference" loading="lazy">
         <figcaption><b>High-resolution geometry with fine detail and efficient inference.</b> Left: input image. Middle: surface normals of GT, TRELLIS.2, Hunyuan3D-2.1, Pixal3D, Direct3D-S2, UltraShape and ours, with zooms A and B; only ours recovers the inscription and relief. Right: detail quality vs. end-to-end time for the only three methods that reach 4096-class resolution, and latency of one attention layer and one DiT block vs. high-resolution tokens.</figcaption>
       </figure>
-      <div class="split">
+      <div class="fig-split">
         <figure class="figure reveal zoomable">
-          <img src="static/img/supp_more_comparisons.webp" alt="Additional comparisons with existing methods" loading="lazy">
+          <img src="static/img/more_comparisons.webp" alt="Additional comparisons with existing methods" loading="lazy">
           <figcaption><b>Additional comparisons.</b> Carved censer, guardian lion and pangolin (generated images), and ornate wooden door. Close-ups of the reference (for generated images, the input crop) and of each method from the input view.</figcaption>
         </figure>
         <div>
           <figure class="figure reveal zoomable">
-            <img src="static/img/supp_offview.webp" alt="Detail holds off the input view" loading="lazy">
+            <img src="static/img/offview.webp" alt="Detail holds off the input view" loading="lazy">
             <figcaption><b>Detail holds off the input view.</b> Each close-up is rendered with the object turned by 30&deg; about the vertical axis through the region. The relief transferred from the input image keeps its shape and depth in the turned view.</figcaption>
           </figure>
         </div>
@@ -206,7 +204,7 @@
         <p>Grain stripes, dark patina and painted patterns stay in the image; carved relief goes into the geometry.</p>
       </div>
       <figure class="figure reveal zoomable">
-        <img src="static/img/supp_textured.webp" alt="Image appearance is not carved into the surface" loading="lazy">
+        <img src="static/img/textured.webp" alt="Image appearance is not carved into the surface" loading="lazy">
         <figcaption><b>Image appearance is not carved into the surface.</b> A zebrawood owl with bold grain stripes, a bronze tortoise with a near-black patina under low-key light, and a folk-art chameleon whose flat paint runs across the carving. The carved feathers, chased medallions and carved scales are recovered; the grain stripes and the painted checks do not become relief.</figcaption>
       </figure>
       <div class="duo">
@@ -289,23 +287,6 @@
           <div class="bar-val ours-val">176.19 s</div>
         </div>
         <div class="e2e-foot"><b>9.4&times;</b> faster than TRELLIS.2-Rec. with <b>23.0%</b> less peak GPU memory &middot; about <b>12.6&times;</b> faster than UltraShape</div>
-      </div>
-    </div>
-  </section>
-
-  <section id="bibtex" class="section section-tight">
-    <div class="wrap reveal">
-      <div class="abs">
-      <h2>Citation</h2>
-      <div class="bib">
-        <button class="copy" id="copyBib">Copy</button>
-<pre id="bibText">@misc{superfine3d2026,
-  title  = {SuperFine3D: Efficient Global-Local Recursive Refinement
-            for Extremely Detailed 3D Geometry Generation},
-  author = {Anonymous},
-  year   = {2026}
-}</pre>
-      </div>
       </div>
     </div>
   </section>
