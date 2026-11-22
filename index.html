@@ -13,7 +13,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="static/css/style.css?v=20261120i">
+<link rel="stylesheet" href="static/css/style.css?v=20261121a">
 </head>
 <body>
 <div class="grain" aria-hidden="true"></div>
@@ -50,6 +50,13 @@
     <div class="hero-stage reveal">
       <div class="v3d" id="v3d">
         <canvas aria-label="Interactive 3D comparison"></canvas>
+        <div class="v3d-ab" hidden>
+          <div class="v3d-ab-layer v3d-ab-r"><img alt="SuperFine3D result rendered from the input view" draggable="false"></div>
+          <div class="v3d-ab-layer v3d-ab-p"><img alt="Input image" draggable="false"></div>
+          <div class="v3d-ab-line" role="slider" tabindex="0" aria-label="Input image (left) versus SuperFine3D (right)" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50"><span class="v3d-ab-knob"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M9.5 6.5 4 12l5.5 5.5V6.5zm5 0v11L20 12l-5.5-5.5z"/></svg></span></div>
+          <div class="v3d-ab-tag v3d-ab-tag-p">Input image</div>
+          <div class="v3d-ab-tag v3d-ab-tag-r"><b>SuperFine3D</b> 4096&sup3; <small>full mesh, input view</small></div>
+        </div>
         <div class="v3d-hot"></div>
         <div class="v3d-top">
           <div class="v3d-objects" role="tablist" aria-label="Object"></div>
@@ -58,7 +65,7 @@
         <div class="v3d-label v3d-label-a"></div>
         <div class="v3d-label v3d-label-b"></div>
         <div class="v3d-divider"></div>
-        <div class="v3d-input"><img alt="Input image"><span>Input image</span></div>
+        <button class="v3d-input" title="Compare the input image with the 3D result"><img alt="Input image"><span>Input image</span><i class="v3d-input-ab" aria-hidden="true"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M11 3h2v18h-2V3zM9.5 7.5 5 12l4.5 4.5v-9zm5 0v9L19 12l-4.5-4.5z"/></svg></i></button>
         <button class="v3d-back" hidden>&larr; Whole object</button>
         <div class="v3d-status"></div>
         <div class="v3d-bar"><i></i></div>
@@ -313,6 +320,6 @@
 
 <script src="static/js/main.js?v=20261120i"></script>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
-<script type="module" src="static/js/viewer3d.js?v=20261120i"></script>
+<script type="module" src="static/js/viewer3d.js?v=20261121b"></script>
 </body>
 </html>

@@ -6,10 +6,10 @@ const root = document.getElementById('v3d');
 if (root) init(root);
 
 function init(root) {
-  const MODEL_V = '20261120h';   // bump when the model files change (cache busting)
+  const MODEL_V = '20261121a';   // bump when the model files change (cache busting)
   const OBJECTS = [
-    { slug: 'pangolin', name: 'Ceremonial pangolin', input: 'static/models/pangolin/input.webp' },
-    { slug: 'nautilus', name: 'Clockwork nautilus', input: 'static/models/nautilus/input.webp' },
+    { slug: 'pangolin', name: 'Ceremonial pangolin', input: 'static/models/pangolin/input.webp', ab: true },
+    { slug: 'nautilus', name: 'Clockwork nautilus', input: 'static/models/nautilus/input.webp', ab: true },
   ];
   const canvas = root.querySelector('canvas');
   const ui = {
@@ -17,6 +17,8 @@ function init(root) {
     labelA: root.querySelector('.v3d-label-a'), labelB: root.querySelector('.v3d-label-b'), divider: root.querySelector('.v3d-divider'),
     back: root.querySelector('.v3d-back'), status: root.querySelector('.v3d-status'), bar: root.querySelector('.v3d-bar i'),
     input: root.querySelector('.v3d-input img'), full: root.querySelector('.v3d-full'), hint: document.querySelector('.v3d-hint'),
+    inputBtn: root.querySelector('.v3d-input'), ab: root.querySelector('.v3d-ab'), abR: root.querySelector('.v3d-ab-r img'), abP: root.querySelector('.v3d-ab-p img'),
+    abPL: root.querySelector('.v3d-ab-p'), abLine: root.querySelector('.v3d-ab-line'), abTagP: root.querySelector('.v3d-ab-tag-p'), abTagR: root.querySelector('.v3d-ab-tag-r'),
   };
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -38,7 +40,7 @@ function init(root) {
   // face normals from screen-space derivatives: always facing the viewer, independent of triangle winding (as in the video renders)
   const material = new THREE.MeshStandardMaterial({ color: 0xe2ded6, roughness: 0.62, metalness: 0.0, flatShading: true, side: THREE.DoubleSide });
   const cache = new Map();
-  const st = { obj: 0, cmp: 0, scene: null, hot: -1, meshes: [null, null], token: 0 };
+  const st = { obj: 0, cmp: 0, scene: null, hot: -1, meshes: [null, null], token: 0, ab: false };
 
   // ---------- geometry loading (SF3D: quantized positions + delta-coded indices, gzip)
   async function fetchMesh(url, onProgress) {
@@ -71,8 +73,11 @@ function init(root) {
     setStatus('Loading ' + o.name + '…', 0.02);
     st.scene = await (await fetch(`static/models/${o.slug}/scene.json?v=${MODEL_V}`)).json(); if (tok !== st.token) return;
     const ci = st.scene.methods.findIndex((m) => m.key === opts.cmp); if (ci > 0) st.cmp = ci;   // deep link: ?obj=owl&cmp=trellis2&hot=1
+    if (opts.cmp === 'input') st.ab = true;                                                      // ?cmp=input[&cut=0.3&zoom=3&at=0.5,0.2]
+    if (st.ab && !o.ab) st.ab = false;
     const hi = st.scene.hotspots.findIndex((h) => h.label === opts.hot);
     buildCompareTabs(); buildHotspots(); resetView(false);
+    setAB(st.ab, opts);
     if (hi >= 0) {
       st.hot = hi; const h = st.scene.hotspots[hi]; ui.back.hidden = false; root.classList.add('in-hot');
       camera.position.set(...h.view); controls.target.set(...h.p); controls.update();
@@ -102,13 +107,108 @@ function init(root) {
     layout();
   }
   function buildCompareTabs() {
-    const ms = st.scene.methods;
-    ui.compare.innerHTML = '<span>Compare with</span>' + ms.map((m, i) => `<button class="${i === st.cmp ? 'active' : ''}" data-i="${i}">${i === 0 ? 'None' : m.name}</button>`).join('');
+    const ms = st.scene.methods, btn = (i, label) => `<button data-i="${i}">${label}</button>`;
+    ui.compare.innerHTML = '<span>Compare with</span>' + btn(0, 'None') + (OBJECTS[st.obj].ab ? btn(-1, 'Input image') : '')
+      + ms.slice(1).map((m, i) => btn(i + 1, m.name)).join('');
+    markCompareTabs();
     ui.compare.querySelectorAll('button').forEach((b) => b.addEventListener('click', () => {
-      st.cmp = +b.dataset.i; ui.compare.querySelectorAll('button').forEach((x) => x.classList.toggle('active', x === b));
-      showMeshes(++st.token);
+      const i = +b.dataset.i;
+      if (i < 0) { setAB(true); return; }
+      const was = st.cmp; st.cmp = i; setAB(false);
+      if (i !== was) showMeshes(++st.token);
     }));
   }
+  function markCompareTabs() { ui.compare.querySelectorAll('button').forEach((x) => x.classList.toggle('active', st.ab ? x.dataset.i === '-1' : +x.dataset.i === st.cmp)); }
+
+  // ---------- input image | 3D slider (pre-rendered full mesh from the fitted input camera: pixel-aligned with the photo crop)
+  const HINT3D = ui.hint ? ui.hint.innerHTML : '';
+  const HINTAB = 'Drag the line to compare the input image with the 3D result &middot; scroll to zoom &middot; drag to pan when zoomed &middot; double-click to reset';
+  const ab = { z: 1, uc: 0.5, vc: 0.5, cut: 0.5, N: 3072, ptrs: new Map(), mode: null, last: null, pinch: null, tok: 0, slug: null };
+  const clamp = (x, a, b) => Math.min(Math.max(x, a), b);
+  function setAB(on, opts = {}) {
+    on = !!on && !!OBJECTS[st.obj].ab; const changed = on !== st.ab; st.ab = on;
+    root.classList.toggle('ab', on); ui.ab.hidden = !on; if (ui.hint) ui.hint.innerHTML = on ? HINTAB : HINT3D;
+    markCompareTabs();
+    if (!on) return;
+    if (changed || ab.slug !== OBJECTS[st.obj].slug) { ab.z = 1; ab.uc = 0.5; ab.vc = 0.5; ab.cut = 0.5; }
+    if (opts.cut) ab.cut = clamp(+opts.cut || 0.5, 0, 1);
+    if (opts.zoom) ab.z = +opts.zoom || 1;
+    if (opts.at) { const [u, v] = opts.at.split(',').map(Number); if (isFinite(u) && isFinite(v)) { ab.uc = u; ab.vc = v; } }
+    if (ab.slug !== OBJECTS[st.obj].slug) abLoad();
+    abLayout();
+  }
+  function abLoad() {
+    const o = OBJECTS[st.obj], tok = ++ab.tok, base = `static/models/${o.slug}/ab_`; ab.slug = o.slug;
+    ui.abP.src = `${base}photo_1k.webp?v=${MODEL_V}`; ui.abR.src = `${base}render_1k.webp?v=${MODEL_V}`;   // small previews first
+    ui.abP.alt = 'Input image: ' + o.name; ui.abR.alt = 'SuperFine3D result for ' + o.name + ', rendered from the input view';
+    const hi = (k) => new Promise((res) => { const im = new Image(); im.onload = () => (im.decode ? im.decode().catch(() => {}) : Promise.resolve()).then(() => res(im)); im.onerror = () => res(null); im.src = `${base}${k}.webp?v=${MODEL_V}`; });
+    Promise.all([hi('photo'), hi('render')]).then(([p, r]) => {
+      if (tok !== ab.tok || !p || !r) return;
+      ab.N = p.naturalWidth; ui.abP.src = p.src; ui.abR.src = r.src; abLayout();   // swap both together: same sharpness on both sides
+    });
+  }
+  function abGeom() {
+    const r = ui.ab.getBoundingClientRect(), W = r.width, H = r.height, S0 = Math.min(W, H);
+    return { r, W, H, S0, zmax: Math.max(3, (1.5 * ab.N) / Math.max(S0, 1)) };
+  }
+  function abLayout() {
+    if (!st.ab) return;
+    const { W, H, S0, zmax } = abGeom(); if (!W || !H) return;
+    ab.z = clamp(ab.z, 1, zmax); const s = S0 * ab.z;
+    let ox = W / 2 - ab.uc * s, oy = H / 2 - ab.vc * s;
+    ox = s <= W ? (W - s) / 2 : clamp(ox, W - s, 0); oy = s <= H ? (H - s) / 2 : clamp(oy, H - s, 0);
+    ab.uc = (W / 2 - ox) / s; ab.vc = (H / 2 - oy) / s; ab.ox = ox; ab.oy = oy; ab.s = s;
+    for (const img of [ui.abR, ui.abP]) { img.style.width = img.style.height = s + 'px'; img.style.transform = `translate(${ox}px, ${oy}px)`; }
+    const x0 = Math.max(0, ox), x1 = Math.min(W, ox + s), lx = clamp(ab.cut * W, x0, x1); ab.lx = lx;
+    ui.abPL.style.clipPath = `inset(0 ${W - lx}px 0 0)`; ui.abLine.style.left = lx + 'px';
+    ui.abLine.setAttribute('aria-valuenow', String(Math.round(((lx - x0) / Math.max(x1 - x0, 1)) * 100)));
+    ui.abTagP.style.left = x0 + 14 + 'px'; ui.abTagP.style.opacity = lx - x0 > ui.abTagP.offsetWidth + 32 ? 1 : 0;
+    ui.abTagR.style.right = W - x1 + 14 + 'px'; ui.abTagR.style.opacity = x1 - lx > ui.abTagR.offsetWidth + 32 ? 1 : 0;
+    ui.ab.classList.toggle('pan', ab.z > 1.001);
+  }
+  function abZoomAt(cx, cy, k) {
+    const { r, W, H, S0 } = abGeom(), px = cx - r.left, py = cy - r.top, s = S0 * ab.z;
+    const u = (px - (W / 2 - ab.uc * s)) / s, v = (py - (H / 2 - ab.vc * s)) / s;   // image point under the cursor stays put
+    ab.z = ab.z * k; abLayout(); const s2 = S0 * ab.z;
+    ab.uc = (W / 2 - (px - u * s2)) / s2; ab.vc = (H / 2 - (py - v * s2)) / s2; abLayout();
+  }
+  const abCut = (clientX) => { const { r, W } = abGeom(); ab.cut = clamp((clientX - r.left) / W, 0, 1); abLayout(); };
+  ui.ab.addEventListener('pointerdown', (e) => {
+    if (e.button !== undefined && e.button !== 0) return;
+    ui.ab.setPointerCapture(e.pointerId); ab.ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (ab.ptrs.size === 2) {
+      const [a, b] = [...ab.ptrs.values()]; ab.mode = 'pinch'; ab.pinch = { d: Math.hypot(a.x - b.x, a.y - b.y), x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+      ab.cut = ab.cut0; abLayout(); ui.ab.classList.remove('dragging', 'panning'); return;   // the first finger did not mean to move the line
+    }
+    if (ab.ptrs.size > 2) return;
+    const x = e.clientX - ui.ab.getBoundingClientRect().left; ab.cut0 = ab.cut;
+    if (ab.z <= 1.001 || Math.abs(x - ab.lx) < 26) { ab.mode = 'line'; ui.ab.classList.add('dragging'); abCut(e.clientX); }
+    else { ab.mode = 'pan'; ui.ab.classList.add('panning'); }
+    ab.last = { x: e.clientX, y: e.clientY };
+  });
+  ui.ab.addEventListener('pointermove', (e) => {
+    if (!ab.ptrs.has(e.pointerId)) return; ab.ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (ab.mode === 'pinch' && ab.ptrs.size === 2) {
+      const [a, b] = [...ab.ptrs.values()], d = Math.hypot(a.x - b.x, a.y - b.y), mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
+      ab.uc -= (mx - ab.pinch.x) / ab.s; ab.vc -= (my - ab.pinch.y) / ab.s; abLayout();
+      if (ab.pinch.d > 0) abZoomAt(mx, my, d / ab.pinch.d); ab.pinch = { d, x: mx, y: my };
+    } else if (ab.mode === 'line') abCut(e.clientX);
+    else if (ab.mode === 'pan') { ab.uc -= (e.clientX - ab.last.x) / ab.s; ab.vc -= (e.clientY - ab.last.y) / ab.s; ab.last = { x: e.clientX, y: e.clientY }; abLayout(); }
+  });
+  const abUp = (e) => {
+    ab.ptrs.delete(e.pointerId);
+    if (ab.ptrs.size === 0 || ab.mode === 'pinch') { ab.mode = ab.ptrs.size ? 'idle' : null; ui.ab.classList.remove('dragging', 'panning'); }
+  };
+  ui.ab.addEventListener('pointerup', abUp); ui.ab.addEventListener('pointercancel', abUp);
+  ui.ab.addEventListener('wheel', (e) => { e.preventDefault(); abZoomAt(e.clientX, e.clientY, Math.exp(-e.deltaY * 0.0015)); }, { passive: false });
+  ui.ab.addEventListener('dblclick', () => { ab.z = 1; ab.uc = 0.5; ab.vc = 0.5; abLayout(); });
+  ui.abLine.addEventListener('keydown', (e) => {
+    const { W } = abGeom(), x0 = Math.max(0, ab.ox), x1 = Math.min(W, ab.ox + ab.s), step = (0.04 * (x1 - x0)) / W;
+    const k = { ArrowLeft: -step, ArrowDown: -step, ArrowRight: step, ArrowUp: step }[e.key];
+    if (k) ab.cut = clamp(ab.lx / W + k, x0 / W, x1 / W); else if (e.key === 'Home') ab.cut = x0 / W; else if (e.key === 'End') ab.cut = x1 / W; else return;
+    e.preventDefault(); abLayout();
+  });
+  ui.inputBtn.addEventListener('click', () => setAB(true));
   function buildHotspots() {
     ui.hot.innerHTML = st.scene.hotspots.map((h, i) => `<button class="v3d-spot" data-i="${i}" title="Load the full-resolution geometry of this region">${h.label}</button>`).join('');
     ui.hot.querySelectorAll('button').forEach((b) => b.addEventListener('click', (e) => { e.stopPropagation(); goHot(+b.dataset.i); }));
@@ -164,7 +264,7 @@ function init(root) {
     const r = canvas.getBoundingClientRect(); renderer.setSize(r.width, r.height, false);
     const split = root.classList.contains('split'); camera.aspect = (split ? r.width / 2 : r.width) / r.height; camera.updateProjectionMatrix();
   }
-  new ResizeObserver(layout).observe(canvas);
+  new ResizeObserver(() => { layout(); abLayout(); }).observe(canvas);
   const tmp = new THREE.Vector3();
   function placeSpots() {
     if (!st.scene) return; const r = canvas.getBoundingClientRect(); const split = root.classList.contains('split'); const vw = split ? r.width / 2 : r.width;
@@ -184,7 +284,7 @@ function init(root) {
     const rim = sc.getObjectByName('rim'); rim.position.copy(controls.target).addScaledVector(back, -2.5).addScaledVector(up, 1.5).addScaledVector(right, 1.0); rim.target.position.copy(controls.target);
   }
   function frame(now) {
-    requestAnimationFrame(frame); if (!visible) return;
+    requestAnimationFrame(frame); if (!visible || st.ab) return;   // the slider shows images: no 3D rendering meanwhile
     stepAnim(now); controls.update(); placeSpots();
     const r = canvas.getBoundingClientRect(), w = r.width, h = r.height, split = root.classList.contains('split');
     const views = split ? [[0, 0, w / 2, h], [w / 2, 0, w / 2, h]] : [[0, 0, w, h]];
@@ -209,5 +309,5 @@ function init(root) {
   const first = want >= 0 ? want : 0;
   ui.objects.querySelectorAll('button').forEach((x, j) => x.classList.toggle('active', j === first));
   const qs = new URLSearchParams(location.search);
-  loadObject(first, { cmp: qs.get('cmp'), hot: qs.get('hot') });
+  loadObject(first, { cmp: qs.get('cmp'), hot: qs.get('hot'), cut: qs.get('cut'), zoom: qs.get('zoom'), at: qs.get('at') });
 }

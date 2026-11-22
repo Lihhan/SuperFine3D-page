@@ -26,99 +26,99 @@
  ],
  "files": {
   "whole_ours": {
-   "v": 840023,
-   "f": 1992363,
-   "bytes": 11571607
+   "v": 713390,
+   "f": 1990650,
+   "bytes": 10595216
   },
   "h0_ours": {
-   "v": 690808,
-   "f": 1461707,
-   "bytes": 8553745,
-   "faces_full": 3058838
+   "v": 653557,
+   "f": 1432406,
+   "bytes": 8419362,
+   "faces_full": 4695391
   },
   "h1_ours": {
-   "v": 750004,
-   "f": 1548079,
-   "bytes": 9140712,
-   "faces_full": 5217363
+   "v": 701600,
+   "f": 1519169,
+   "bytes": 8871621,
+   "faces_full": 8058707
   },
   "h2_ours": {
-   "v": 676352,
-   "f": 1417074,
-   "bytes": 8399449,
-   "faces_full": 3102779
+   "v": 623271,
+   "f": 1370885,
+   "bytes": 8119734,
+   "faces_full": 4999103
   },
   "whole_trellis2": {
-   "v": 393608,
-   "f": 848880,
-   "bytes": 5387015,
+   "v": 397655,
+   "f": 857443,
+   "bytes": 5439456,
    "faces_full": 30887656
   },
   "h0_trellis2": {
-   "v": 397916,
-   "f": 791601,
-   "bytes": 4822559,
-   "faces_full": 730095
+   "v": 397682,
+   "f": 791074,
+   "bytes": 4817746,
+   "faces_full": 728827
   },
   "h1_trellis2": {
-   "v": 336971,
-   "f": 671858,
-   "bytes": 4081947,
-   "faces_full": 613806
+   "v": 336479,
+   "f": 671113,
+   "bytes": 4080094,
+   "faces_full": 612583
   },
   "h2_trellis2": {
-   "v": 338832,
-   "f": 672654,
-   "bytes": 4211080,
-   "faces_full": 617188
+   "v": 338614,
+   "f": 672309,
+   "bytes": 4210853,
+   "faces_full": 616051
   },
   "whole_hunyuan21": {
-   "v": 428320,
-   "f": 856930,
-   "bytes": 5380676,
+   "v": 429788,
+   "f": 859868,
+   "bytes": 5399379,
    "faces_full": 10995772
   },
   "h0_hunyuan21": {
-   "v": 131052,
-   "f": 258836,
-   "bytes": 1566863,
-   "faces_full": 203563
+   "v": 131085,
+   "f": 258893,
+   "bytes": 1568355,
+   "faces_full": 203412
   },
   "h1_hunyuan21": {
-   "v": 205888,
-   "f": 409005,
-   "bytes": 2479589,
-   "faces_full": 322560
+   "v": 205670,
+   "f": 408571,
+   "bytes": 2481734,
+   "faces_full": 322328
   },
   "h2_hunyuan21": {
-   "v": 57156,
-   "f": 112185,
-   "bytes": 708554,
-   "faces_full": 41568
+   "v": 57286,
+   "f": 112461,
+   "bytes": 710617,
+   "faces_full": 41948
   },
   "whole_pixal3d": {
-   "v": 425694,
-   "f": 899290,
-   "bytes": 5515118,
+   "v": 418172,
+   "f": 884108,
+   "bytes": 5422529,
    "faces_full": 22333636
   },
   "h0_pixal3d": {
-   "v": 235503,
-   "f": 479052,
-   "bytes": 2852220,
-   "faces_full": 411440
+   "v": 235208,
+   "f": 478392,
+   "bytes": 2845931,
+   "faces_full": 411274
   },
   "h1_pixal3d": {
-   "v": 386066,
-   "f": 775810,
-   "bytes": 4520286,
-   "faces_full": 687647
+   "v": 383999,
+   "f": 771682,
+   "bytes": 4498909,
+   "faces_full": 687345
   },
   "h2_pixal3d": {
-   "v": 239210,
-   "f": 480873,
-   "bytes": 2926431,
-   "faces_full": 430771
+   "v": 239081,
+   "f": 480578,
+   "bytes": 2924384,
+   "faces_full": 430560
   }
  },
  "hotspots": [
@@ -168,33 +168,33 @@
  "align": {
   "trellis2": {
    "anisotropy": 3.435224476359543,
-   "icp_rot_deg": 5.134285094620666,
-   "icp_scale": 1.211957276279268,
-   "trimmed_rms_before": 0.03304624327906288,
-   "trimmed_rms_after": 0.01116770304516873,
-   "hot0_shift_over_r": 0.334,
-   "hot1_shift_over_r": 0.377,
-   "hot2_shift_over_r": 0.413
+   "icp_rot_deg": 5.3005280436324025,
+   "icp_scale": 1.213073980686856,
+   "trimmed_rms_before": 0.0328158301501089,
+   "trimmed_rms_after": 0.011011948324027986,
+   "hot0_shift_over_r": 0.341,
+   "hot1_shift_over_r": 0.39,
+   "hot2_shift_over_r": 0.412
   },
   "hunyuan21": {
    "anisotropy": 2.967378801726472,
-   "icp_rot_deg": 3.8669989561859883,
-   "icp_scale": 1.1933004549765243,
-   "trimmed_rms_before": 0.034157992866047,
-   "trimmed_rms_after": 0.009297015649307908,
+   "icp_rot_deg": 3.7179561821353295,
+   "icp_scale": 1.19380118772214,
+   "trimmed_rms_before": 0.03390026215889187,
+   "trimmed_rms_after": 0.00931420377966228,
    "hot0_shift_over_r": 0.168,
-   "hot1_shift_over_r": 0.188,
+   "hot1_shift_over_r": 0.199,
    "hot2_shift_over_r": 0.0
   },
   "pixal3d": {
    "anisotropy": 1.0621274513664145,
-   "icp_rot_deg": 0.6664770796498564,
-   "icp_scale": 1.0152930846398573,
-   "trimmed_rms_before": 0.0035993979452736535,
-   "trimmed_rms_after": 0.0016703746389120594,
-   "hot0_shift_over_r": 0.031,
-   "hot1_shift_over_r": 0.009,
-   "hot2_shift_over_r": 0.028
+   "icp_rot_deg": 0.48466718672748754,
+   "icp_scale": 1.0155342103268923,
+   "trimmed_rms_before": 0.003697517694007623,
+   "trimmed_rms_after": 0.002142808462693779,
+   "hot0_shift_over_r": 0.029,
+   "hot1_shift_over_r": 0.019,
+   "hot2_shift_over_r": 0.025
   }
  },
  "camera": {
@@ -215,5 +215,5 @@
   ],
   "fov": 25.00612553478128
  },
- "total_mb": 82.1
+ "total_mb": 80.4
 }

@@ -341,7 +341,11 @@ td b { color: var(--ours-2); }
 .v3d-label-b { right: 14px; }
 .v3d-divider { position: absolute; top: 0; bottom: 0; left: 50%; width: 2px; background: rgba(255,255,255,.18); display: none; }
 .v3d.split .v3d-divider { display: block; }
-.v3d-input { position: absolute; left: 12px; bottom: 12px; width: 14%; border-radius: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,.25); background: #fff; box-shadow: 0 10px 30px rgba(0,0,0,.5); pointer-events: none; }
+.v3d-input { position: absolute; left: 12px; bottom: 12px; width: 14%; padding: 0; font: inherit; display: block; border-radius: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,.25); background: #fff; box-shadow: 0 10px 30px rgba(0,0,0,.5); cursor: pointer; transition: border-color .2s, transform .2s; }
+.v3d-input:hover, .v3d-input:focus-visible { border-color: var(--ours); transform: translateY(-2px); }
+.v3d-input img { display: block; }
+.v3d-input-ab { position: absolute; top: 6px; right: 6px; width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; color: #1b1206; background: linear-gradient(135deg, var(--ours-2), var(--ours)); box-shadow: 0 2px 8px rgba(0,0,0,.35); }
+.v3d-input-ab svg { width: 15px; height: 15px; }
 .v3d.split .v3d-input { width: 10%; }
 .v3d-input img { width: 100%; aspect-ratio: 1; object-fit: cover; }
 .v3d-input span { position: absolute; left: 0; right: 0; bottom: 0; font-size: 10px; font-weight: 600; text-align: center; color: #fff; padding: 3px 0; background: linear-gradient(transparent, rgba(0,0,0,.65)); }
@@ -366,3 +370,21 @@ td b { color: var(--ours-2); }
 .v3d.in-hot .v3d-input { display: none; }
 .v3d-status:not(:empty) { padding: 5px 11px; border-radius: 999px; background: rgba(10, 13, 20, .72); border: 1px solid var(--line-2); backdrop-filter: blur(8px); }
 .v3d-title { font-size: 13px; font-weight: 600; color: #1b1206; padding: 6px 12px; border-radius: 999px; background: linear-gradient(135deg, var(--ours-2), var(--ours)); }
+/* input image | 3D slider: full-resolution render of the full mesh from the fitted input camera, same pixels as the photo crop */
+.v3d-ab { position: absolute; inset: 0; background: #0f131c; overflow: hidden; touch-action: none; cursor: ew-resize; user-select: none; -webkit-user-select: none; }
+.v3d-ab[hidden] { display: none; }
+.v3d-ab.pan { cursor: grab; }
+.v3d-ab.panning { cursor: grabbing; }
+.v3d-ab-layer { position: absolute; inset: 0; pointer-events: none; }
+.v3d-ab-layer img { position: absolute; left: 0; top: 0; max-width: none; pointer-events: none; -webkit-user-drag: none; }
+.v3d-ab-line { position: absolute; top: 0; bottom: 0; left: 50%; width: 2px; margin-left: -1px; background: #fff; box-shadow: 0 0 0 1px rgba(0,0,0,.2), 0 0 14px rgba(0,0,0,.45); cursor: ew-resize; outline: none; }
+.v3d-ab-knob { position: absolute; top: 50%; left: 50%; width: 42px; height: 42px; transform: translate(-50%, -50%); border-radius: 50%; display: grid; place-items: center; color: #1b1206;
+  background: linear-gradient(135deg, var(--ours-2), var(--ours)); border: 2px solid #fff; box-shadow: 0 6px 20px rgba(0,0,0,.45); transition: transform .15s; }
+.v3d-ab-knob svg { width: 22px; height: 22px; }
+.v3d-ab-line:hover .v3d-ab-knob, .v3d-ab-line:focus-visible .v3d-ab-knob, .v3d-ab.dragging .v3d-ab-knob { transform: translate(-50%, -50%) scale(1.1); }
+.v3d-ab-line:focus-visible .v3d-ab-knob { outline: 2px solid #fff; outline-offset: 3px; }
+.v3d-ab-tag { position: absolute; bottom: 14px; font-size: 12.5px; padding: 5px 11px; border-radius: 999px; background: rgba(10, 13, 20, .72); border: 1px solid var(--line-2); color: #fff; backdrop-filter: blur(8px); pointer-events: none; white-space: nowrap; transition: opacity .2s; }
+.v3d-ab-tag b { color: var(--ours-2); }
+.v3d-ab-tag small { color: var(--muted); margin-left: 6px; }
+.v3d.ab .v3d-hot, .v3d.ab .v3d-label, .v3d.ab .v3d-divider, .v3d.ab .v3d-input, .v3d.ab .v3d-back, .v3d.ab .v3d-status, .v3d.ab .v3d-bar { display: none; }
+@media (max-width: 640px) { .v3d-ab-tag small { display: none; } .v3d-input-ab { width: 20px; height: 20px; top: 4px; right: 4px; } .v3d-input-ab svg { width: 13px; height: 13px; } }
